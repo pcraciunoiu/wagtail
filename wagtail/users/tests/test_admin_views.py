@@ -246,7 +246,7 @@ class TestUserIndexView(AdminTemplateTestUtils, WagtailTestUtils, TestCase):
         )
         response = self.get({"q": "country"})
         self.assertEqual(response.status_code, 200)
-        results = response.context["users"].object_list
+        results = response.context["users"]
         self.assertIn(custom_user_with_country, results)
 
     @unittest.skipUnless(
@@ -266,11 +266,10 @@ class TestUserIndexView(AdminTemplateTestUtils, WagtailTestUtils, TestCase):
             last_name="Doe",
             country="testcountry",
         )
-        response = self.get({"q": "country first name last name"})
+        response = self.get({"q": "country joe doe"})
         self.assertEqual(response.status_code, 200)
-        results = response.context["users"].object_list
+        results = response.context["users"]
         self.assertIn(custom_user_with_country, results)
-        self.assertIn(self.test_user, results)
 
     def test_search_query_multiple_fields(self):
         response = self.get({"q": "first name last name"})

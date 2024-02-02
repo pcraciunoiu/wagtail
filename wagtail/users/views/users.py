@@ -120,17 +120,7 @@ class Index(IndexView):
 
     def get_queryset(self):
         model_fields = set(self.model_fields)
-        if self.is_searching:
-            if class_is_indexed(User):
-                search_backend = get_search_backend(self.search_backend_name)
-                users = search_backend.search(
-                    self.search_query, User.objects.filter(self.group_filter)
-                )
-            else:
-                conditions = get_users_filter_query(self.search_query, model_fields)
-                users = User.objects.filter(self.group_filter & conditions)
-        else:
-            users = User.objects.filter(self.group_filter)
+        users = User.objects.all()
 
         if self.locale:
             users = users.filter(locale=self.locale)
@@ -143,6 +133,16 @@ class Index(IndexView):
 
         if self.ordering == "username":
             users = users.order_by(User.USERNAME_FIELD)
+
+        if self.is_searching:
+            if class_is_indexed(User):
+                search_backend = get_search_backend(self.search_backend_name)
+                users = search_backend.search(
+                    self.search_query, User.objects.filter(self.group_filter)
+                )
+            else:
+                conditions = get_users_filter_query(self.search_query, model_fields)
+                users = User.objects.filter(self.group_filter & conditions)
 
         return users
 

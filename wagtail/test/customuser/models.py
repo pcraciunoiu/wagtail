@@ -80,4 +80,9 @@ class CustomUser(index.Indexed, AbstractBaseUser, PermissionsMixin):
         FieldPanel("last_name"),
     ]
 
-    search_fields = [index.SearchField("country", partial_match=True, boost=10)]
+    search_fields = [
+        index.SearchField("country", partial_match=True, boost=10),
+        index.SearchField("first_name"),
+        index.SearchField("last_name"),
+        index.FilterField("group_id"),
+    ]
