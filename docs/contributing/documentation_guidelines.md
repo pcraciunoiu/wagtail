@@ -1,14 +1,21 @@
 # Documentation guidelines
 
-```eval_rst
-.. contents::
-    :local:
-    :depth: 1
+```{contents}
+---
+local:
+depth: 1
+---
 ```
+
+(writing_style_guide)=
+
+## Writing style guide
+
+To ensure consistency in tone and language, follow the [Google developer documentation style guide](https://developers.google.com/style) when writing the Wagtail documentation.
 
 ## Formatting recommendations
 
-Wagtail’s documentation uses a mixture of [Markdown](https://commonmark.org/help/) and [reStructuredText](https://www.sphinx-doc.org/en/master/usage/restructuredtext/basics.html). We encourage writing documentation in Markdown first, and only reaching for more advanced reStructuredText formatting if there is a compelling reason.
+Wagtail’s documentation uses a mixture of [Markdown](https://myst-parser.readthedocs.io/en/stable/syntax/syntax.html) and [reStructuredText](https://www.sphinx-doc.org/en/master/usage/restructuredtext/basics.html). We encourage writing documentation in Markdown first, and only reaching for more advanced reStructuredText formatting if there is a compelling reason.
 
 Here are formats we encourage using when writing documentation for Wagtail.
 
@@ -18,6 +25,19 @@ It all starts here.
 Keep your sentences short, varied in length.
 
 Separate text with an empty line to create a new paragraph.
+
+### Latin phrases and abbreviations
+
+Try to avoid Latin phrases (such as `ergo` or `de facto`) and abbreviations (such as `i.e.` or `e.g.`), and use common English phrases instead. Alternatively, find a simpler way to communicate the concept or idea to the reader. The exception is `etc.` which can be used when space is limited.
+
+Examples:
+
+| Don't use this | Use this instead     |
+| -------------- | -------------------- |
+| e.g.           | for example, such as |
+| i.e.           | that is              |
+| viz.           | namely               |
+| ergo           | therefore            |
 
 ### Heading levels
 
@@ -36,10 +56,10 @@ Use heading levels to create sections, and allow users to link straight to a spe
 Use bullets for unordered lists, numbers when ordered. Prefer dashes `-` for bullets. Nest by indenting with 4 spaces.
 
 ```md
-- Bullet 1
-- Bullet 2
-    - Nested bullet 2
-- Bullet 3
+-   Bullet 1
+-   Bullet 2
+    -   Nested bullet 2
+-   Bullet 3
 
 1. Numbered list 1
 2. Numbered list 2
@@ -50,10 +70,10 @@ Use bullets for unordered lists, numbers when ordered. Prefer dashes `-` for bul
 
 <summary>Rendered output</summary>
 
-- Bullet 1
-- Bullet 2
-    - Nested bullet 2
-- Bullet 3
+-   Bullet 1
+-   Bullet 2
+    -   Nested bullet 2
+-   Bullet 3
 
 1. Numbered list 1
 2. Numbered list 2
@@ -63,23 +83,79 @@ Use bullets for unordered lists, numbers when ordered. Prefer dashes `-` for bul
 
 ### Inline styles
 
-Use **bold** and _italic_ sparingly, inline `code` when relevant.
+Use **bold** and _italic_ sparingly and inline `code` when relevant.
 
 ```md
-Use **bold** and _italic_ sparingly, inline `code` when relevant.
+Use **bold** and _italic_ sparingly and inline `code` when relevant.
 ```
 
 ### Code blocks
 
-Make sure to include the correct language code for syntax highlighting, and to format your code according to our coding guidelines. Frequently used: `python`, `css`, `html`, `html+django`, `javascript`, `console`.
+Make sure to include the correct language code for syntax highlighting, and to format your code according to our coding guidelines. Frequently used: `python`, `css`, `html`, `html+django`, `javascript`, `sh`.
 
     ```python
     INSTALLED_APPS = [
         ...
-        "wagtail.core",
+        "wagtail",
         ...
     ]
     ```
+
+<details>
+
+<summary>Rendered output</summary>
+
+```python
+INSTALLED_APPS = [
+    ...
+    "wagtail",
+    ...
+]
+```
+
+</details>
+
+#### When using console (terminal) code blocks
+
+```{note}
+`$` or `>` prompts are not needed, this makes it harder to copy and paste the lines and can be difficult to consistently add in every single code snippet.
+```
+
+Use `sh` as it has better support for comment and code syntax highlighting in MyST's parser, plus is more compatible with GitHub and VSCode.
+
+    ```sh
+    # some comment
+    some command
+    ```
+
+<details>
+
+<summary>Rendered output</summary>
+
+```sh
+# some comment
+some command
+```
+
+</details>
+
+Use `doscon` (DOS Console) only if explicitly calling out Windows commands alongside their bash equivalent.
+
+    ```doscon
+    # some comment
+    some command
+    ```
+
+<details>
+
+<summary>Rendered output</summary>
+
+```doscon
+# some comment
+some command
+```
+
+</details>
 
 ### Links
 
@@ -89,7 +165,8 @@ Don’t rely on [`links over code`](https://www.example.com/), as they are impos
 
 ```md
 An [external link](https://wwww.example.com).
-An [internal link to another document](/reference/contrib/legacy_richtext.md).
+An [internal link to another document](/reference/contrib/legacy_richtext).
+An auto generated link label to a page [](/getting_started/tutorial).
 A [link to a reference](register_reports_menu_item).
 ```
 
@@ -98,65 +175,130 @@ A [link to a reference](register_reports_menu_item).
 <summary>Rendered output</summary>
 
 An [external link](https://wwww.example.com).
-An [internal link to another document](/reference/contrib/legacy_richtext.md).
+An [internal link to another document](/reference/contrib/legacy_richtext).
+An auto generated link label to a page [](/getting_started/tutorial).
 A [link to a reference](register_reports_menu_item).
 
 </details>
 
-Reference links rely on creating a reference in reStructuredText. Prefer linking to the whole document if at all possible, otherwise create a reference by embedding reStructuredText with `eval_rst`:
+#### Reference links
 
-    ```eval_rst
-    .. _register_reports_menu_item:
-    ```
+Reference links (links to a target within a page) rely on the page having a reference created. Each reference must have a unique name and should use the `lower_snake_case` format. A reference can be added as follows:
+
+```md
+(my_awesome_section)=
+
+##### Some awesome section title
+
+...
+```
+
+The reference can be linked to, with an optional label, using the Markdown link syntax as follows:
+
+```md
+-   Auto generated label (preferred) [](my_awesome_section)
+-   [label for section](my_awesome_section)
+```
+
+<details>
+
+<summary>Rendered output</summary>
+
+(my_awesome_section)=
+
+##### Some awesome section title
+
+...
+
+-   Auto generated label (preferred) [](my_awesome_section)
+-   [label for section](my_awesome_section)
+
+</details>
+
+You can read more about other methods of linking to, and creating references in the MyST parser docs section on [Targets and cross-referencing](https://myst-parser.readthedocs.io/en/stable/syntax/syntax.html#targets-and-cross-referencing).
+
+#### Intersphinx links (external docs)
+
+Due to the large amount of documentation links to Django's Sphinx documentation, we have added the integration with this via intersphinx references.
+
+```md
+You can select widgets from [Django's form widgets](inv:django#ref/forms/widgets)
+```
+
+```rst
+    This parameter allows you to specify a :doc:`Django form widget <django:ref/forms/widgets>` to use instead of the default widget for this field type.
+```
+
+There is no support for id (hash) refs on pages at this time, so these will need to be written out as full URLs, remember to use the `stable` URL and not a specific version. In some cases you may be able to reference the name of the hash directly though.
+
+```md
+<!-- #django-template-context-processors-i18n does not work, so a full URL will be needed -->
+
+[django.template.context_processors.i18n](https://docs.djangoproject.com/en/stable/ref/templates/api/#django-template-context-processors-i18n)
+
+<!--  #meta-and-multi-table-inheritance does work as a direct name reference -->
+
+[multi-table inheritance](inv:django#meta-and-multi-table-inheritance)
+```
 
 ### Note and warning call-outs
 
 Use notes and warnings sparingly, as they rely on reStructuredText syntax which is more complicated for future editors.
 
-    ```eval_rst note:: Notes can provide complementary information.
+    ```{note}
+    Notes can provide complementary information.
     ```
 
-    ```eval_rst warning:: Warnings can be scary.
+    ```{warning}
+    Warnings can be scary.
     ```
 
 <details>
 
 <summary>Rendered output</summary>
 
-```eval_rst note:: Notes can provide complementary information.
+```{note}
+Notes can provide complementary information.
 ```
 
-```eval_rst warning:: Warnings can be scary.
+```{warning}
+Warnings can be scary.
 ```
 
 </details>
+
+These call-outs do not support titles, so be careful not to include them, titles will just be moved to the body of the call-out.
+
+    ```{note} Title's here will not work correctly
+    Notes can provide complementary information.
+    ```
 
 ### Images
 
 Images are hard to keep up-to-date as documentation evolves, but can be worthwhile nonetheless. Here are guidelines when adding images:
 
-- All images should have meaningful [alt text](https://axesslab.com/alt-texts/) unless they are decorative.
-- Images are served as-is – pick the correct format, and losslessly compress all images.
-- Use absolute paths for image files so they are more portable.
+-   All images should have meaningful [alt text](https://axesslab.com/alt-texts/) unless they are decorative.
+-   Images are served as-is – pick the correct format, and losslessly compress all images.
+-   Use absolute paths for image files so they are more portable.
 
 ```md
-![Screenshot of the workflow editing interface, with fields to change the workflow name, tasks, and assigned pages](/_static/images/screen44_workflow_edit.png)
+![The TableBlock component in StreamField, with row header, column header, caption fields - and then the editable table](/_static/images/screen40_table_block.png)
 ```
 
 <details>
 
 <summary>Rendered output</summary>
 
-![Screenshot of the workflow editing interface, with fields to change the workflow name, tasks, and assigned pages](/_static/images/screen44_workflow_edit.png)
+![The TableBlock component in StreamField, with row header, column header, caption fields - and then the editable table](/_static/images/screen40_table_block.png)
 
 </details>
 
 ### Autodoc
 
-With its [autodoc](https://www.sphinx-doc.org/en/master/usage/extensions/autodoc.html) feature, Sphinx supports writing documentation in Python docstrings for subsequent integration in the project’s documentation pages. This is a very powerful feature which we highly recommend using to document Wagtail’s APIs.
+With its [autodoc](https://www.sphinx-doc.org/en/master/usage/extensions/autodoc.html) feature, Sphinx supports writing documentation in Python docstrings for subsequent integration in the project’s documentation pages. This is a very powerful feature that we highly recommend using to document Wagtail’s APIs.
 
-    ```eval_rst
-    .. module:: wagtail.core.utils
+    ```{eval-rst}
+    .. module:: wagtail.coreutils
 
     .. autofunction:: cautious_slugify
     ```
@@ -164,8 +306,8 @@ With its [autodoc](https://www.sphinx-doc.org/en/master/usage/extensions/autodoc
 <details>
 <summary>Rendered output</summary>
 
-```eval_rst
-.. module:: wagtail.core.utils
+```{eval-rst}
+.. module:: wagtail.coreutils
 
 .. autofunction:: cautious_slugify
 ```
@@ -174,73 +316,68 @@ With its [autodoc](https://www.sphinx-doc.org/en/master/usage/extensions/autodoc
 
 ### Tables
 
-Only use tables when needed, with the “simple” reStructuredText syntax, which is hard enough to format as it is.
+Only use tables when needed, using the [GitHub Flavored Markdown table syntax](https://github.github.com/gfm/#tables-extension-).
 
-    ```eval_rst
-    =============  =============
-    Browser        Device/OS    
-    =============  =============
-    Stock browser  Android      
-    IE             Desktop      
-    Safari         Windows      
-    =============  =============
-    ```
+```md
+| Browser       | Device/OS |
+| ------------- | --------- |
+| Stock browser | Android   |
+| IE            | Desktop   |
+| Safari        | Windows   |
+```
 
 <details>
 
 <summary>Rendered output</summary>
 
-```eval_rst
-=============  =============
-Browser        Device/OS    
-=============  =============
-Stock browser  Android      
-IE             Desktop      
-Safari         Windows      
-=============  =============
-```
+| Browser       | Device/OS |
+| ------------- | --------- |
+| Stock browser | Android   |
+| IE            | Desktop   |
+| Safari        | Windows   |
 
 </details>
 
-### Tables of content
+### Tables of contents
 
-`toctree` and `contents` can be used as reStructuredText embeds.
+`toctree` and `contents` can be used as reStructuredText directives.
 
-    ```eval_rst
-    .. toctree::
-        :maxdepth: 2
-        :titlesonly:
-
-        getting_started/index
-        topics/index
+    ```{toctree}
+    ---
+    maxdepth: 2
+    titlesonly:
+    ---
+    getting_started/index
+    topics/index
     ```
 
-    ```eval_rst
-    .. contents::
+    ```{contents}
+    ---
+    local:
+    depth: 1
+    ---
     ```
 
 ### Version added, changed, deprecations
 
 Sphinx offers release-metadata directives to generate this information consistently. Use as appropriate.
 
-    ```eval_rst
-    .. versionadded:: 2.11
+    ```{versionadded} 2.15
     ```
 
-    ```eval_rst
-    .. versionchanged:: 2.11
+    ```{versionchanged} 2.15
     ```
 
 <details>
 
 <summary>Rendered output</summary>
 
-```eval_rst
-.. versionadded:: 2.11
+```{versionadded} 2.15
+
 ```
 
-```eval_rst
-.. versionchanged:: 2.11
+```{versionchanged} 2.15
+
 ```
 
 </details>
@@ -251,11 +388,9 @@ We can add supplementary information in documentation with the HTML `<details>` 
 
 ```html
 <details>
+    <summary>Supplementary information</summary>
 
-<summary>Supplementary information</summary>
-
-This will be visible when expanding the content.
-
+    This will be visible when expanding the content.
 </details>
 ```
 
@@ -275,7 +410,7 @@ There is some formatting in the documentation which is technically supported, bu
 
 ### Call-outs
 
-We only use `note::` and `warning::` call-outs. Avoid `important::`, `topic::`, and `tip::`. If you find one of these, please replace it with `note::`.
+We only use `{note}` and `{warning}` call-outs. Avoid `{admonition}`, `{important}`, `{topic}`, and `{tip}`. If you find one of these, please replace it with `{note}`.
 
 ### Glossary
 

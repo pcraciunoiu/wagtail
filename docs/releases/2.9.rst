@@ -2,6 +2,8 @@
 Wagtail 2.9 release notes
 =========================
 
+*May 4, 2020*
+
 .. contents::
     :local:
     :depth: 1
@@ -29,7 +31,7 @@ Other features
 
 * Added support for creating custom reports (Jacob Topp-Mugglestone)
 * Skip page validation when unpublishing a page (Samir Shah)
-* Added :ref:`streamfield_multiplechoiceblock` block type for StreamField (James O'Toole)
+* Added :ref:`MultipleChoiceBlock <streamfield_multiplechoiceblock>` block type for StreamField (James O'Toole)
 * ChoiceBlock now accepts a ``widget`` keyword argument (James O'Toole)
 * Reduced contrast of rich text toolbar (Jack Paine)
 * Support the rel attribute on custom ModelAdmin buttons (Andy Chosak)
@@ -44,7 +46,7 @@ Other features
 * FieldPanel now accepts a 'heading' argument (Jacob Topp-Mugglestone)
 * Replaced deprecated ``ugettext`` / ``ungettext`` calls with ``gettext`` / ``ngettext`` (Mohamed Feddad)
 * ListBlocks now call child block ``bulk_to_python`` if defined (Andy Chosak)
-* Site settings are now identifiable/cachable by request as well as site (Andy Babic)
+* Site settings are now identifiable/cacheable by request as well as site (Andy Babic)
 * Added ``select_related`` attribute to site settings to enable more efficient fetching of foreign key values (Andy Babic)
 * Add caching of image renditions (Tom Dyson, Tim Kamanin)
 * Add documentation for reporting security issues and internationalisation (Matt Westcott)

@@ -1,162 +1,195 @@
-from django.core.paginator import Paginator
-from django.shortcuts import get_object_or_404
-from django.template.response import TemplateResponse
-from django.urls import reverse
-from django.utils.translation import gettext as _
+from django import forms
+from django.utils.functional import cached_property
+from django.utils.html import format_html
+from django.utils.translation import gettext_lazy as _
+from django.views.generic.base import View
 
-from wagtail.admin.auth import PermissionPolicyChecker
-from wagtail.admin.forms.search import SearchForm
-from wagtail.admin.modal_workflow import render_modal_workflow
-from wagtail.core import hooks
-from wagtail.documents import get_document_model
-from wagtail.documents.forms import get_document_form
+from wagtail.admin.staticfiles import versioned_static
+from wagtail.admin.ui.tables import Column, DateColumn, DownloadColumn
+from wagtail.admin.views.generic.chooser import (
+    BaseChooseView,
+    ChooseResultsViewMixin,
+    ChooseViewMixin,
+    ChosenResponseMixin,
+    ChosenViewMixin,
+    CreateViewMixin,
+    CreationFormMixin,
+)
+from wagtail.admin.viewsets.chooser import ChooserViewSet
+from wagtail.admin.widgets import BaseChooser, BaseChooserAdapter
+from wagtail.blocks import ChooserBlock
+from wagtail.documents import get_document_model, get_document_model_string
 from wagtail.documents.permissions import permission_policy
-from wagtail.search import index as search_index
 
 
-permission_checker = PermissionPolicyChecker(permission_policy)
+class DocumentChosenResponseMixin(ChosenResponseMixin):
+    def get_chosen_response_data(self, document):
+        response_data = super().get_chosen_response_data(document)
+        response_data.update(
+            {
+                "url": document.url,
+                "filename": document.filename,
+            }
+        )
+        return response_data
 
 
-def get_chooser_context():
-    """construct context variables needed by the chooser JS"""
-    return {
-        'step': 'chooser',
-        'error_label': _("Server Error"),
-        'error_message': _("Report this error to your webmaster with the following information:"),
-        'tag_autocomplete_url': reverse('wagtailadmin_tag_autocomplete'),
-    }
+class DocumentCreationFormMixin(CreationFormMixin):
+    creation_tab_id = "upload"
+
+    def get_creation_form_class(self):
+        from wagtail.documents.forms import get_document_form
+
+        return get_document_form(self.model)
+
+    def get_creation_form_kwargs(self):
+        kwargs = super().get_creation_form_kwargs()
+        kwargs.update(
+            {
+                "user": self.request.user,
+                "prefix": "document-chooser-upload",
+            }
+        )
+        if self.request.method in ("POST", "PUT"):
+            kwargs["instance"] = self.model(uploaded_by_user=self.request.user)
+
+        return kwargs
 
 
-def get_document_result_data(document):
-    """
-    helper function: given a document, return the json data to pass back to the
-    chooser panel
-    """
+class BaseDocumentChooseView(BaseChooseView):
+    results_template_name = "wagtaildocs/chooser/results.html"
+    per_page = 10
+    ordering = "-created_at"
+    construct_queryset_hook_name = "construct_document_chooser_queryset"
 
-    return {
-        'id': document.id,
-        'title': document.title,
-        'url': document.url,
-        'filename': document.filename,
-        'edit_link': reverse('wagtaildocs:edit', args=(document.id,)),
-    }
+    def get_object_list(self):
+        return self.permission_policy.instances_user_has_any_permission_for(
+            self.request.user, ["choose"]
+        )
 
+    def get_filter_form(self):
+        FilterForm = self.get_filter_form_class()
+        return FilterForm(self.request.GET, collections=self.collections)
 
-def chooser(request):
-    Document = get_document_model()
-
-    if permission_policy.user_has_permission(request.user, 'add'):
-        DocumentForm = get_document_form(Document)
-        uploadform = DocumentForm(user=request.user, prefix='document-chooser-upload')
-    else:
-        uploadform = None
-
-    documents = permission_policy.instances_user_has_any_permission_for(
-        request.user, ['choose']
-    )
-
-    # allow hooks to modify the queryset
-    for hook in hooks.get_hooks('construct_document_chooser_queryset'):
-        documents = hook(documents, request)
-
-    q = None
-    if 'q' in request.GET or 'p' in request.GET or 'collection_id' in request.GET:
-
-        collection_id = request.GET.get('collection_id')
-        if collection_id:
-            documents = documents.filter(collection=collection_id)
-        documents_exist = documents.exists()
-
-        searchform = SearchForm(request.GET)
-        if searchform.is_valid():
-            q = searchform.cleaned_data['q']
-
-            documents = documents.search(q)
-            is_searching = True
-        else:
-            documents = documents.order_by('-created_at')
-            is_searching = False
-
-        # Pagination
-        paginator = Paginator(documents, per_page=10)
-        documents = paginator.get_page(request.GET.get('p'))
-
-        return TemplateResponse(request, "wagtaildocs/chooser/results.html", {
-            'documents': documents,
-            'documents_exist': documents_exist,
-            'uploadform': uploadform,
-            'query_string': q,
-            'is_searching': is_searching,
-            'collection_id': collection_id,
-        })
-    else:
-        searchform = SearchForm()
-
-        collections = permission_policy.collections_user_has_permission_for(
-            request.user, 'choose'
+    @cached_property
+    def collections(self):
+        collections = self.permission_policy.collections_user_has_permission_for(
+            self.request.user, "choose"
         )
         if len(collections) < 2:
-            collections = None
+            return None
 
-        documents = documents.order_by('-created_at')
-        documents_exist = documents.exists()
-        paginator = Paginator(documents, per_page=10)
-        documents = paginator.get_page(request.GET.get('p'))
+        return collections
 
-        return render_modal_workflow(request, 'wagtaildocs/chooser/chooser.html', None, {
-            'documents': documents,
-            'documents_exist': documents_exist,
-            'uploadform': uploadform,
-            'searchform': searchform,
-            'collections': collections,
-            'is_searching': False,
-        }, json_data=get_chooser_context())
+    @property
+    def columns(self):
+        columns = super().columns + [
+            DownloadColumn("filename", label=_("File")),
+            DateColumn("created_at", label=_("Created"), width="16%"),
+        ]
 
+        if self.collections:
+            columns.insert(2, Column("collection", label=_("Collection")))
 
-def document_chosen(request, document_id):
-    document = get_object_or_404(get_document_model(), id=document_id)
+        return columns
 
-    return render_modal_workflow(
-        request, None, None,
-        None, json_data={'step': 'document_chosen', 'result': get_document_result_data(document)}
-    )
+    def get(self, request):
+        self.model = get_document_model()
+        return super().get(request)
 
 
-@permission_checker.require('add')
-def chooser_upload(request):
-    Document = get_document_model()
-    DocumentForm = get_document_form(Document)
+class DocumentChooseViewMixin(ChooseViewMixin):
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context["collections"] = self.collections
+        return context
 
-    if request.method == 'POST':
-        document = Document(uploaded_by_user=request.user)
-        form = DocumentForm(
-            request.POST, request.FILES, instance=document, user=request.user, prefix='document-chooser-upload'
+
+class DocumentChooseView(
+    DocumentChooseViewMixin, DocumentCreationFormMixin, BaseDocumentChooseView
+):
+    pass
+
+
+class DocumentChooseResultsView(
+    ChooseResultsViewMixin, DocumentCreationFormMixin, BaseDocumentChooseView
+):
+    pass
+
+
+class DocumentChosenView(ChosenViewMixin, DocumentChosenResponseMixin, View):
+    def get(self, request, *args, pk, **kwargs):
+        self.model = get_document_model()
+        return super().get(request, *args, pk, **kwargs)
+
+
+class DocumentChooserUploadView(
+    CreateViewMixin, DocumentCreationFormMixin, DocumentChosenResponseMixin, View
+):
+    def dispatch(self, request, *args, **kwargs):
+        self.model = get_document_model()
+        return super().dispatch(request, *args, **kwargs)
+
+
+class BaseAdminDocumentChooser(BaseChooser):
+    classname = "document-chooser"
+    js_constructor = "DocumentChooser"
+
+    def __init__(self, **kwargs):
+        super().__init__(**kwargs)
+        self.model = get_document_model_string()
+
+    @property
+    def media(self):
+        return forms.Media(
+            js=[
+                versioned_static("wagtaildocs/js/document-chooser-modal.js"),
+                versioned_static("wagtaildocs/js/document-chooser.js"),
+            ]
         )
 
-        if form.is_valid():
-            document.file_size = document.file.size
 
-            # Set new document file hash
-            document.file.seek(0)
-            document._set_file_hash(document.file.read())
-            document.file.seek(0)
+class DocumentChooserAdapter(BaseChooserAdapter):
+    js_constructor = "wagtail.documents.widgets.DocumentChooser"
 
-            form.save()
+    @cached_property
+    def media(self):
+        return forms.Media(
+            js=[
+                versioned_static("wagtaildocs/js/document-chooser-modal.js"),
+                versioned_static("wagtaildocs/js/document-chooser-telepath.js"),
+            ]
+        )
 
-            # Reindex the document to make sure all tags are indexed
-            search_index.insert_or_update_object(document)
 
-            return render_modal_workflow(
-                request, None, None,
-                None, json_data={'step': 'document_chosen', 'result': get_document_result_data(document)}
-            )
-    else:
-        form = DocumentForm(user=request.user, prefix='document-chooser-upload')
+class BaseDocumentChooserBlock(ChooserBlock):
+    def render_basic(self, value, context=None):
+        if value:
+            return format_html('<a href="{0}">{1}</a>', value.url, value.title)
+        else:
+            return ""
 
-    documents = Document.objects.order_by('title')
 
-    return render_modal_workflow(
-        request, 'wagtaildocs/chooser/chooser.html', None,
-        {'documents': documents, 'uploadform': form},
-        json_data=get_chooser_context()
-    )
+class DocumentChooserViewSet(ChooserViewSet):
+    choose_view_class = DocumentChooseView
+    choose_results_view_class = DocumentChooseResultsView
+    chosen_view_class = DocumentChosenView
+    create_view_class = DocumentChooserUploadView
+    base_widget_class = BaseAdminDocumentChooser
+    widget_telepath_adapter_class = DocumentChooserAdapter
+    base_block_class = BaseDocumentChooserBlock
+    permission_policy = permission_policy
+
+    icon = "doc-full-inverse"
+    choose_one_text = _("Choose a document")
+    create_action_label = _("Upload")
+    create_action_clicked_label = _("Uploading…")
+    choose_another_text = _("Choose another document")
+    edit_item_text = _("Edit this document")
+
+
+viewset = DocumentChooserViewSet(
+    "wagtaildocs_chooser",
+    model=get_document_model_string(),
+    url_prefix="documents/chooser",
+)

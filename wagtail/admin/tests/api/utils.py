@@ -1,8 +1,9 @@
-from django.test import TestCase
+from django.test import TransactionTestCase
 
-from wagtail.tests.utils import WagtailTestUtils
+from wagtail.test.utils import WagtailTestUtils
 
 
-class AdminAPITestCase(TestCase, WagtailTestUtils):
+class AdminAPITestCase(WagtailTestUtils, TransactionTestCase):
     def setUp(self):
-        self.login()
+        super().setUp()
+        self.user = self.login()

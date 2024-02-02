@@ -1,58 +1,38 @@
 from django.core.exceptions import PermissionDenied
-from django.shortcuts import get_object_or_404, redirect
-from django.utils import timezone
-from django.utils.http import is_safe_url
+from django.urls import reverse
 from django.utils.translation import gettext as _
-from django.views.decorators.http import require_POST
 
-from wagtail.admin import messages
-from wagtail.core.models import Page
-
-
-@require_POST
-def lock(request, page_id):
-    # Get the page
-    page = get_object_or_404(Page, id=page_id).specific
-
-    # Check permissions
-    if not page.permissions_for_user(request.user).can_lock():
-        raise PermissionDenied
-    # Lock the page
-    if not page.locked:
-        page.locked = True
-        page.locked_by = request.user
-        page.locked_at = timezone.now()
-        page.save(user=request.user, log_action='wagtail.lock')
-
-    # Redirect
-    redirect_to = request.POST.get('next', None)
-    if redirect_to and is_safe_url(url=redirect_to, allowed_hosts={request.get_host()}):
-        return redirect(redirect_to)
-    else:
-        return redirect('wagtailadmin_explore', page.get_parent().id)
+from wagtail.admin.views.generic import lock
+from wagtail.models import Page
 
 
-@require_POST
-def unlock(request, page_id):
-    # Get the page
-    page = get_object_or_404(Page, id=page_id).specific
+class PageOperationViewMixin:
+    model = Page
+    pk_url_kwarg = "page_id"
 
-    # Check permissions
-    if not page.permissions_for_user(request.user).can_unlock():
-        raise PermissionDenied
+    def get_object(self):
+        return super().get_object().specific
 
-    # Unlock the page
-    if page.locked:
-        page.locked = False
-        page.locked_by = None
-        page.locked_at = None
-        page.save(user=request.user, log_action='wagtail.unlock')
+    def get_success_url(self):
+        if self.next_url:
+            return self.next_url
+        return reverse("wagtailadmin_explore", args=[self.object.get_parent().id])
 
-        messages.success(request, _("Page '{0}' is now unlocked.").format(page.get_admin_display_title()), extra_tags='unlock')
 
-    # Redirect
-    redirect_to = request.POST.get('next', None)
-    if redirect_to and is_safe_url(url=redirect_to, allowed_hosts={request.get_host()}):
-        return redirect(redirect_to)
-    else:
-        return redirect('wagtailadmin_explore', page.get_parent().id)
+class LockView(PageOperationViewMixin, lock.LockView):
+    def perform_operation(self):
+        if not self.object.permissions_for_user(self.request.user).can_lock():
+            raise PermissionDenied
+        return super().perform_operation()
+
+
+class UnlockView(PageOperationViewMixin, lock.UnlockView):
+    def perform_operation(self):
+        if not self.object.permissions_for_user(self.request.user).can_unlock():
+            raise PermissionDenied
+        return super().perform_operation()
+
+    def get_success_message(self):
+        return _("Page '%(page_title)s' is now unlocked.") % {
+            "page_title": self.object.get_admin_display_title()
+        }

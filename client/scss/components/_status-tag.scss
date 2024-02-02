@@ -1,37 +1,59 @@
-.status-tag {
-    border-radius: 2px;
-    text-align: center;
-    display: inline-block;
-    text-transform: uppercase;
-    padding: 0 0.5em;
-    border: 1px solid lighten($color-grey-2, 30%);
-    color: lighten($color-grey-2, 30%);
-    -webkit-font-smoothing: auto;
-    line-height: 19px;
-    font-size: 0.8em;
-    margin: 0 0.5em 0.5em;
-    background: #fff url('#{$images-root}bg-dark-diag.svg');
+@use 'sass:color';
 
-    &.primary {
-        color: $color-grey-2;
-        border: 1px solid $color-grey-2;
-        background: #fff;
-    }
+.w-status {
+  border-radius: 2px;
+  text-align: center;
+  display: inline-block;
+  // stylelint-disable-next-line property-disallowed-list
+  text-transform: uppercase;
+  padding: 0 0.5em;
+  border: 1px solid theme('colors.border-furniture');
+  color: theme('colors.text-context');
+  -webkit-font-smoothing: auto;
+  line-height: 19px;
+  font-size: 0.8em;
+  margin: 0 0.5em 0.5em;
+  background: theme('colors.surface-page')
+    url('#{$images-root}bg-dark-diag.svg');
 
-    &.disabled {
-        pointer-events: none;
-    }
+  &.w-status--primary {
+    color: theme('colors.text-meta');
+    border: 1px solid theme('colors.text-meta');
+    background: theme('colors.surface-page');
+  }
+
+  &.w-status--disabled,
+  &[disabled] {
+    pointer-events: none;
+  }
+
+  &--label {
+    color: theme('colors.text-context');
+    background: theme('colors.border-button-small-outline-default');
+    border: theme('colors.border-button-small-outline-default');
+    font-weight: 500;
+  }
 }
 
-button.status-tag:hover,
-a.status-tag:hover,
-a.status-tag.primary:hover {
-    border-color: $color-teal;
-    color: $color-teal;
+.listing .index .w-status--label {
+  border: 1px solid;
 }
 
-button.status-tag:hover {
-    border-color: $color-teal-dark;
-    background-color: $color-teal-darker;
-    color: $color-white;
+button.w-status:hover,
+a.w-status:hover,
+a.w-status.w-status--primary:hover {
+  border-color: theme('colors.border-button-outline-hover');
+  color: theme('colors.text-button-outline-hover');
+}
+
+button.w-status:hover {
+  border-color: theme('colors.border-button-outline-hover');
+  background-color: theme('colors.surface-button-outline-hover');
+  color: theme('colors.text-button-outline-hover');
+}
+
+// Special case for text-transform: uppercase.
+.page-status-tag {
+  // stylelint-disable-next-line property-disallowed-list
+  text-transform: uppercase;
 }

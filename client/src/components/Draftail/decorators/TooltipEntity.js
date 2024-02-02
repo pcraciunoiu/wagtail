@@ -5,7 +5,10 @@ import { Icon } from 'draftail';
 import Tooltip from '../Tooltip/Tooltip';
 import Portal from '../../Portal/Portal';
 
-const shortenLabel = (label) => {
+/**
+ * Shortens the given label if it goes beyond a predetermined limit.
+ */
+export const shortenLabel = (label) => {
   let shortened = label;
   if (shortened.length > 25) {
     shortened = `${shortened.slice(0, 20)}…`;
@@ -59,8 +62,14 @@ class TooltipEntity extends Component {
     this.setState({
       showTooltipAt: {
         container: container,
-        top: rect.top - containerRect.top - (document.documentElement.scrollTop || document.body.scrollTop),
-        left: rect.left - containerRect.left - (document.documentElement.scrollLeft || document.body.scrollLeft),
+        top:
+          rect.top -
+          containerRect.top -
+          (document.documentElement.scrollTop || document.body.scrollTop),
+        left:
+          rect.left -
+          containerRect.left -
+          (document.documentElement.scrollLeft || document.body.scrollLeft),
         width: rect.width,
         height: rect.height,
       },
@@ -72,12 +81,7 @@ class TooltipEntity extends Component {
   }
 
   render() {
-    const {
-      children,
-      icon,
-      label,
-      url,
-    } = this.props;
+    const { children, icon, label, url } = this.props;
     const { showTooltipAt } = this.state;
 
     return (
@@ -105,7 +109,7 @@ class TooltipEntity extends Component {
                   href={url}
                   title={url}
                   target="_blank"
-                  rel="noopener noreferrer"
+                  rel="noreferrer"
                   className="Tooltip__link"
                 >
                   {shortenLabel(label)}
@@ -113,14 +117,14 @@ class TooltipEntity extends Component {
               ) : null}
 
               <button
-                className="button Tooltip__button"
+                className="button button-small Tooltip__button"
                 onClick={this.onEdit}
               >
                 Edit
               </button>
 
               <button
-                className="button button-secondary no Tooltip__button"
+                className="button button-small button-secondary no Tooltip__button"
                 onClick={this.onRemove}
               >
                 Remove

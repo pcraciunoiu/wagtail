@@ -9,10 +9,10 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Wagtail\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2021-01-18 17:30+0000\n"
-"PO-Revision-Date: 2020-07-24 16:51+0000\n"
-"Last-Translator: Matt Westcott <matthew@torchbox.com>\n"
-"Language-Team: Latvian (http://www.transifex.com/torchbox/wagtail/language/"
+"POT-Creation-Date: 2023-10-19 23:14+0100\n"
+"PO-Revision-Date: 2014-02-20 21:04+0000\n"
+"Last-Translator: Reinis Rozenbergs <reinisr@gmail.com>, 2016\n"
+"Language-Team: Latvian (http://app.transifex.com/torchbox/wagtail/language/"
 "lv/)\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -21,8 +21,24 @@ msgstr ""
 "Plural-Forms: nplurals=3; plural=(n%10==1 && n%100!=11 ? 0 : n != 0 ? 1 : "
 "2);\n"
 
+msgid "Type"
+msgstr "Veids"
+
+msgid "Permanent"
+msgstr "Pastāvīgs"
+
+msgid "All"
+msgstr "Viss"
+
 msgid "From site"
 msgstr "No vietnes"
+
+#, python-format
+msgid "Supported formats: %(supported_formats)s."
+msgstr "Atbalstītie formāti: %(supported_formats)s."
+
+msgid "site"
+msgstr "vietne"
 
 msgid "Add redirect"
 msgstr "Pievienot novirzījumu"
@@ -43,6 +59,9 @@ msgstr "Dzēst"
 msgid "Yes, delete"
 msgstr "Dzēst"
 
+msgid "Preview"
+msgstr "Priekšskatīt"
+
 #, python-format
 msgid "Editing %(title)s"
 msgstr "Labo %(title)s"
@@ -62,9 +81,6 @@ msgstr "Līdz"
 msgid "Site"
 msgstr "Vietne"
 
-msgid "Type"
-msgstr "Veids"
-
 msgid "Edit this redirect"
 msgstr "Labot šo novirzījumu"
 
@@ -75,14 +91,17 @@ msgstr "Nav novirzījumu, kas atbilst \"<em>%(query_string)s</em>\""
 msgid "Search redirects"
 msgstr "Meklēt novirzījumus"
 
-msgid "Redirect '{0}' updated."
-msgstr "Novirzījums '{0}' atjaunots."
+#, python-format
+msgid "Redirect '%(redirect_title)s' updated."
+msgstr "Novirzījums '%(redirect_title)s' atjaunots."
 
 msgid "Edit"
 msgstr "Labot"
 
-msgid "Redirect '{0}' deleted."
-msgstr "Novirzījums '{0}' dzēsts."
+#, python-format
+msgid "Redirect '%(redirect_title)s' deleted."
+msgstr "Novirzījums '%(redirect_title)s' dzēsts."
 
-msgid "Redirect '{0}' added."
-msgstr "Novirzījums '{0}' pievienots."
+#, python-format
+msgid "Redirect '%(redirect_title)s' added."
+msgstr "Novirzījums '%(redirect_title)s' pievienots."

@@ -2,15 +2,12 @@
 
 exports[`Button #accessibleLabel 1`] = `
 <a
-  aria-haspopup={null}
   className=""
   href="#"
   onClick={[Function]}
-  rel={null}
-  target={null}
 >
   <span
-    className="visuallyhidden"
+    className="w-sr-only"
   >
     I am here in the shadows
   </span>
@@ -19,12 +16,9 @@ exports[`Button #accessibleLabel 1`] = `
 
 exports[`Button #children 1`] = `
 <a
-  aria-haspopup={null}
   className=""
   href="#"
   onClick={[Function]}
-  rel={null}
-  target={null}
 >
   To infinity and beyond!
 </a>
@@ -36,29 +30,23 @@ exports[`Button #dialogTrigger 1`] = `
   className=""
   href="#"
   onClick={[Function]}
-  rel={null}
-  target={null}
 />
 `;
 
 exports[`Button #target 1`] = `
 <a
-  aria-haspopup={null}
   className=""
   href="#"
   onClick={[Function]}
-  rel="noopener noreferrer"
+  rel="noreferrer"
   target="_blank"
 />
 `;
 
 exports[`Button basic 1`] = `
 <a
-  aria-haspopup={null}
   className=""
   href="#"
   onClick={[Function]}
-  rel={null}
-  target={null}
 />
 `;

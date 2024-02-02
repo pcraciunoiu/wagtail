@@ -1,5 +1,3 @@
-import unittest
-
 from datetime import date
 from io import StringIO
 
@@ -7,7 +5,7 @@ from django.core import management
 
 from wagtail.search.query import MATCH_ALL
 from wagtail.search.tests.test_backends import BackendTests
-from wagtail.tests.search import models
+from wagtail.test.search import models
 
 
 class ElasticsearchCommonSearchBackendTests(BackendTests):
@@ -27,70 +25,69 @@ class ElasticsearchCommonSearchBackendTests(BackendTests):
         from wagtail.search.backends.base import FilterError
 
         with self.assertRaises(FilterError):
-            list(self.backend.search("Hello", models.Book.objects.filter(title__iregex='h(ea)llo')))
+            list(
+                self.backend.search(
+                    "Hello", models.Book.objects.filter(title__iregex="h(ea)llo")
+                )
+            )
 
     def test_partial_search(self):
-        results = self.backend.search("Java", models.Book)
+        results = self.backend.autocomplete("Java", models.Book)
 
-        self.assertUnsortedListEqual([r.title for r in results], [
-            "JavaScript: The Definitive Guide",
-            "JavaScript: The good parts"
-        ])
+        self.assertUnsortedListEqual(
+            [r.title for r in results],
+            ["JavaScript: The Definitive Guide", "JavaScript: The good parts"],
+        )
 
     def test_disabled_partial_search(self):
-        results = self.backend.search("Java", models.Book, partial_match=False)
+        results = self.backend.search("Java", models.Book)
 
         self.assertUnsortedListEqual([r.title for r in results], [])
 
     def test_disabled_partial_search_with_whole_term(self):
         # Making sure that there isn't a different reason why the above test
         # returned no results
-        results = self.backend.search("JavaScript", models.Book, partial_match=False)
+        results = self.backend.search("JavaScript", models.Book)
 
-        self.assertUnsortedListEqual([r.title for r in results], [
-            "JavaScript: The Definitive Guide",
-            "JavaScript: The good parts"
-        ])
+        self.assertUnsortedListEqual(
+            [r.title for r in results],
+            ["JavaScript: The Definitive Guide", "JavaScript: The good parts"],
+        )
 
     def test_child_partial_search(self):
         # Note: Expands to "Westeros". Which is in a field on Novel.setting
-        results = self.backend.search("Wes", models.Book)
+        results = self.backend.autocomplete("Wes", models.Book)
 
-        self.assertUnsortedListEqual([r.title for r in results], [
-            "A Game of Thrones",
-            "A Storm of Swords",
-            "A Clash of Kings"
-        ])
+        self.assertUnsortedListEqual(
+            [r.title for r in results],
+            ["A Game of Thrones", "A Storm of Swords", "A Clash of Kings"],
+        )
 
     def test_ascii_folding(self):
         book = models.Book.objects.create(
-            title="Ĥéllø",
-            publication_date=date(2017, 10, 19),
-            number_of_pages=1
+            title="Ĥéllø", publication_date=date(2017, 10, 19), number_of_pages=1
         )
 
         index = self.backend.get_index_for_model(models.Book)
         index.add_item(book)
         index.refresh()
 
-        results = self.backend.search("Hello", models.Book)
+        results = self.backend.autocomplete("Hello", models.Book)
 
-        self.assertUnsortedListEqual([r.title for r in results], [
-            "Ĥéllø"
-        ])
+        self.assertUnsortedListEqual([r.title for r in results], ["Ĥéllø"])
 
     def test_query_analyser(self):
         # This is testing that fields that use edgengram_analyzer as their index analyser do not
         # have it also as their query analyser
         results = self.backend.search("JavaScript", models.Book)
-        self.assertUnsortedListEqual([r.title for r in results], [
-            "JavaScript: The Definitive Guide",
-            "JavaScript: The good parts"
-        ])
+        self.assertUnsortedListEqual(
+            [r.title for r in results],
+            ["JavaScript: The Definitive Guide", "JavaScript: The good parts"],
+        )
 
         # Even though they both start with "Java", this should not match the "JavaScript" books
         results = self.backend.search("JavaBeans", models.Book)
-        self.assertSetEqual(set(r.title for r in results), set())
+        self.assertSetEqual({r.title for r in results}, set())
 
     def test_search_with_hyphen(self):
         """
@@ -102,7 +99,7 @@ class ElasticsearchCommonSearchBackendTests(BackendTests):
         book = models.Book.objects.create(
             title="Harry Potter and the Half-Blood Prince",
             publication_date=date(2009, 7, 15),
-            number_of_pages=607
+            number_of_pages=607,
         )
 
         index = self.backend.get_index_for_model(models.Book)
@@ -110,21 +107,29 @@ class ElasticsearchCommonSearchBackendTests(BackendTests):
         index.refresh()
 
         results = self.backend.search("Half-Blood", models.Book)
-        self.assertUnsortedListEqual([r.title for r in results], [
-            "Harry Potter and the Half-Blood Prince",
-        ])
+        self.assertUnsortedListEqual(
+            [r.title for r in results],
+            [
+                "Harry Potter and the Half-Blood Prince",
+            ],
+        )
 
     def test_and_operator_with_single_field(self):
         # Testing for bug #1859
-        results = self.backend.search("JavaScript", models.Book, operator='and', fields=['title'])
-        self.assertUnsortedListEqual([r.title for r in results], [
-            "JavaScript: The Definitive Guide",
-            "JavaScript: The good parts"
-        ])
+        results = self.backend.search(
+            "JavaScript", models.Book, operator="and", fields=["title"]
+        )
+        self.assertUnsortedListEqual(
+            [r.title for r in results],
+            ["JavaScript: The Definitive Guide", "JavaScript: The good parts"],
+        )
 
     def test_update_index_command_schema_only(self):
         management.call_command(
-            'update_index', backend_name=self.backend_name, schema_only=True, stdout=StringIO()
+            "update_index",
+            backend_name=self.backend_name,
+            schema_only=True,
+            stdout=StringIO(),
         )
 
         # This should not give any results
@@ -141,7 +146,13 @@ class ElasticsearchCommonSearchBackendTests(BackendTests):
         # Tests that fetching more than 100 results uses the scroll API
         books = []
         for i in range(150):
-            books.append(models.Book.objects.create(title="Book {}".format(i), publication_date=date(2017, 10, 21), number_of_pages=i))
+            books.append(
+                models.Book.objects.create(
+                    title=f"Book {i}",
+                    publication_date=date(2017, 10, 21),
+                    number_of_pages=i,
+                )
+            )
 
         index = self.backend.get_index_for_model(models.Book)
         index.add_items(models.Book, books)
@@ -153,7 +164,13 @@ class ElasticsearchCommonSearchBackendTests(BackendTests):
     def test_slice_more_than_one_hundred_results(self):
         books = []
         for i in range(150):
-            books.append(models.Book.objects.create(title="Book {}".format(i), publication_date=date(2017, 10, 21), number_of_pages=i))
+            books.append(
+                models.Book.objects.create(
+                    title=f"Book {i}",
+                    publication_date=date(2017, 10, 21),
+                    number_of_pages=i,
+                )
+            )
 
         index = self.backend.get_index_for_model(models.Book)
         index.add_items(models.Book, books)
@@ -167,7 +184,13 @@ class ElasticsearchCommonSearchBackendTests(BackendTests):
         # which will skip the first page if the first result is on the second page
         books = []
         for i in range(150):
-            books.append(models.Book.objects.create(title="Book {}".format(i), publication_date=date(2017, 10, 21), number_of_pages=i))
+            books.append(
+                models.Book.objects.create(
+                    title=f"Book {i}",
+                    publication_date=date(2017, 10, 21),
+                    number_of_pages=i,
+                )
+            )
 
         index = self.backend.get_index_for_model(models.Book)
         index.add_items(models.Book, books)
@@ -176,37 +199,10 @@ class ElasticsearchCommonSearchBackendTests(BackendTests):
         results = self.backend.search(MATCH_ALL, models.Book)[110:]
         self.assertEqual(len(results), 54)
 
-    def test_search_with_date_filter(self):
-        after_1900 = models.Book.objects.filter(publication_date__year__gt=1900)
-
-        results = self.backend.search(MATCH_ALL, after_1900)
-        self.assertEqual(len(after_1900), len(results))
-
+    def test_cannot_filter_on_date_parts_other_than_year(self):
         # Filtering by date not supported, should throw a FilterError
         from wagtail.search.backends.base import FilterError
 
         in_jan = models.Book.objects.filter(publication_date__month=1)
         with self.assertRaises(FilterError):
             self.backend.search(MATCH_ALL, in_jan)
-
-    # Elasticsearch always does prefix matching on `partial_match` fields,
-    # even when we don’t use `Prefix`.
-    @unittest.expectedFailure
-    def test_incomplete_term(self):
-        super().test_incomplete_term()
-
-    # Elasticsearch does not accept prefix for multiple words
-    @unittest.expectedFailure
-    def test_prefix_multiple_words(self):
-        super().test_prefix_multiple_words()
-
-    # Elasticsearch always does prefix matching on `partial_match` fields,
-    # even when we don’t use `Prefix`.
-    @unittest.expectedFailure
-    def test_incomplete_plain_text(self):
-        super().test_incomplete_plain_text()
-
-    # Elasticsearch does not support 'fields' arguments on autocomplete queries
-    @unittest.expectedFailure
-    def test_autocomplete_with_fields_arg(self):
-        super().test_autocomplete_with_fields_arg()

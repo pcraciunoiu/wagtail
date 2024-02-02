@@ -7,14 +7,16 @@
 # Ahmad Kiswani <kiswani.ahmad@gmail.com>, 2016
 # ROGER MICHAEL ASHLEY ALLEN <rogermaallen@gmail.com>, 2015
 # ultraify media <ultraify@gmail.com>, 2018
+# Younes Oumakhou, 2022
+# Younes Oumakhou, 2022
 msgid ""
 msgstr ""
 "Project-Id-Version: Wagtail\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2021-01-18 17:31+0000\n"
-"PO-Revision-Date: 2020-07-24 16:51+0000\n"
-"Last-Translator: Matt Westcott <matthew@torchbox.com>\n"
-"Language-Team: Arabic (http://www.transifex.com/torchbox/wagtail/language/"
+"POT-Creation-Date: 2023-10-19 23:14+0100\n"
+"PO-Revision-Date: 2014-02-19 11:54+0000\n"
+"Last-Translator: Younes Oumakhou, 2022\n"
+"Language-Team: Arabic (http://app.transifex.com/torchbox/wagtail/language/"
 "ar/)\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -25,9 +27,6 @@ msgstr ""
 
 msgid "Wagtail users"
 msgstr "مستخدمي wagtail"
-
-msgid "Required. 30 characters or fewer. Letters, digits and @/./+/-/_ only."
-msgstr "مطلوب. 30 حرفًا أو أقل. الحروف والأرقام و @ /. / + / - / _ فقط."
 
 msgid "This value may contain only letters, numbers and @/./+/-/_ characters."
 msgstr "قد تحتوي هذه القيمة على أحرف وأرقام و @ /. / + / - / _ حرف فقط."
@@ -71,15 +70,6 @@ msgstr "توجد مجموعة بهذا الإسم"
 msgid "You cannot have multiple permission records for the same page."
 msgstr "لا يمكن أن يكون لديك سجلات أذونات متعددة لنفس الصفحة."
 
-msgid "Preferred language"
-msgstr "اللغة المفضلة"
-
-msgid "Current time zone"
-msgstr "المنطقة الزمنية الحالية"
-
-msgid "Upload a profile picture"
-msgstr "تحميل صورة ملف شخصي"
-
 msgid "submitted notifications"
 msgstr "بلاغات مقدمة"
 
@@ -119,8 +109,14 @@ msgstr "ملف تعريفي للمستخدم"
 msgid "user profiles"
 msgstr "ملف تعريفي للمستخدم"
 
-msgid "Delete group"
-msgstr "احذف المجموعة"
+msgid "Delete"
+msgstr "احذف"
+
+msgid "Yes, delete"
+msgstr "نعم, احذف"
+
+msgid "No, don't delete"
+msgstr "لا, لا تذف"
 
 msgid ""
 "Deleting this group will revoke this group's permissions from all member "
@@ -130,17 +126,14 @@ msgstr "حذف هذه المجموعة سوف يلغي تصريحات المجم
 msgid "Are you sure you want to delete this group?"
 msgstr "هل تريد فعلا حذف هذه الجماعة؟"
 
-msgid "Yes, delete"
-msgstr "نعم, احذف"
-
 msgid "Add group"
 msgstr "أضف جماعة"
 
-msgid "Editing"
-msgstr "تحرير"
-
 msgid "Save"
 msgstr "احفظ"
+
+msgid "Delete group"
+msgstr "احذف المجموعة"
 
 msgid "Object permissions"
 msgstr "أذونات الكائن"
@@ -154,8 +147,14 @@ msgstr "أضف"
 msgid "Change"
 msgstr "غيّر"
 
-msgid "Delete"
-msgstr "احذف"
+msgid "Publish"
+msgstr "انشر"
+
+msgid "Lock"
+msgstr "قفل"
+
+msgid "Unlock"
+msgstr "إزالة القفل"
 
 msgid "Other permissions"
 msgstr "تصريحات أخرى"
@@ -169,32 +168,20 @@ msgstr "صفحة"
 msgid "Add a page permission"
 msgstr "أضف تصريحا لصفحة"
 
-msgid "groups"
-msgstr "مجموعات"
-
-msgid "Add a group"
-msgstr "أضف مجموعة"
-
 #, python-format
 msgid "Sorry, no groups match \"%(query)s\""
 msgstr "عذرًا ، لا توجد مجموعات تطابق \"%(query)s\""
 
 #, python-format
 msgid ""
-"There are no groups configured. Why not <a href="
-"\"%(wagtailusers_create_group_url)s\">add some</a>?"
+"There are no groups configured. Why not <a "
+"href=\"%(wagtailusers_create_group_url)s\">add some</a>?"
 msgstr ""
-"لا توجد مجموعات تم تكوينها. لماذا لا <a href="
-"\"%(wagtailusers_create_group_url)s\">تضيف بعض</a>؟"
-
-msgid "Delete user"
-msgstr "إحذف المستخدم"
+"لا توجد مجموعات تم تكوينها. لماذا لا <a "
+"href=\"%(wagtailusers_create_group_url)s\">تضيف بعض</a>؟"
 
 msgid "Are you sure you want to delete this user?"
 msgstr "هل أنت متأكد من حذف هذا المستخدم؟ "
-
-msgid "Add user"
-msgstr "أضف مستخدم"
 
 msgid "Account"
 msgstr "حساب"
@@ -202,20 +189,20 @@ msgstr "حساب"
 msgid "Roles"
 msgstr "الأدوار"
 
-msgid "Users"
-msgstr "مستخدمين"
-
-msgid "Add a user"
+msgid "Add user"
 msgstr "أضف مستخدم"
+
+msgid "Delete user"
+msgstr "إحذف المستخدم"
 
 msgid "Username"
 msgstr "إسم المستخدم"
 
-msgid "Level"
-msgstr "مستوى"
-
 msgid "Status"
 msgstr "الحالة"
+
+msgid "Last Login"
+msgstr "آخر تسجيل دخول"
 
 msgid "Admin"
 msgstr "إدارة"
@@ -227,50 +214,59 @@ msgid "Inactive"
 msgstr "غير نشط"
 
 #, python-format
+msgid "There is %(counter)s match"
+msgid_plural "There are %(counter)s matches"
+msgstr[0] "هنالك %(counter)sتَطابق"
+msgstr[1] "هنالك %(counter)sتَطابق"
+msgstr[2] "هنالك %(counter)sتَطابق"
+msgstr[3] "هنالك %(counter)sتَطابق"
+msgstr[4] "هنالك %(counter)sتَطابق"
+msgstr[5] "هنالك %(counter)sتَطابق"
+
+#, python-format
 msgid "Sorry, no users match \"<em>%(query_string)s</em>\""
 msgstr "عذرًا ، لا يوجد مستخدمون يتطابقون مع \"<em>%(query_string)s</em>\""
 
 msgid "Groups"
 msgstr "مجموعات"
 
+msgid "Add a group"
+msgstr "أضف مجموعة"
+
 msgid "Search groups"
 msgstr "مجموعات البحث"
 
-msgid "Group '{0}' created."
-msgstr "تم إنشاء المجموعة '{0}'."
+#, python-format
+msgid "Group '%(object)s' created."
+msgstr "تم إنشاء المجموعة '%(object)s'."
 
-msgid "Group '{0}' updated."
-msgstr "تم تعديل المجموعة '{0}'."
+#, python-format
+msgid "Group '%(object)s' updated."
+msgstr "تم تعديل المجموعة '%(object)s'."
 
 msgid "The group could not be saved due to errors."
 msgstr "من غير الممكن حفظ المجموعة بسبب أخطاء"
 
-msgid "Group '{0}' deleted."
-msgstr "تم حذف المجموعة '{0}'."
+#, python-format
+msgid "Group '%(object)s' deleted."
+msgstr "تم حذف المجموعة '%(object)s'."
 
-msgid "Search users"
-msgstr "ابحث عن المستخدمين"
+msgid "Add a user"
+msgstr "أضف مستخدم"
 
-msgid "User '{0}' created."
-msgstr "تم إنشاء المستخدم '{0}'."
+msgid "Users"
+msgstr "مستخدمين"
 
-msgid "Edit"
-msgstr "تحرير"
-
-msgid "The user could not be created due to errors."
-msgstr "من غير الممكن إنشاء الحساب بسبب أخطاء"
-
-msgid "User '{0}' updated."
-msgstr "تم تحديث المستخدم '{0}'."
+#, python-format
+msgid "User '%(object)s' updated."
+msgstr "تم تحديث المستخدم '%(object)s'."
 
 msgid "The user could not be saved due to errors."
 msgstr "من غير الممكن حفظ المستخدم بسبب أخطاء"
 
-msgid "User '{0}' deleted."
-msgstr "تم حذف المستخدم '{0}'."
+#, python-format
+msgid "User '%(object)s' deleted."
+msgstr "تم حذف المستخدم '%(object)s'."
 
-msgid "Edit this user"
-msgstr "تحرير هذا المستخدم"
-
-msgid "Delete this user"
-msgstr "إحذف هذا المستخدم"
+msgid "Edit"
+msgstr "تحرير"

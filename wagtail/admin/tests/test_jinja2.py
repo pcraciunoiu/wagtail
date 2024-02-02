@@ -1,21 +1,18 @@
 from django.contrib.auth.models import AnonymousUser
-from django.http import HttpRequest
 from django.template import engines
 from django.test import TestCase
 
-from wagtail.core.models import PAGE_TEMPLATE_VAR, Page, Site
-from wagtail.tests.utils import WagtailTestUtils
+from wagtail.coreutils import get_dummy_request
+from wagtail.models import PAGE_TEMPLATE_VAR, Page, Site
+from wagtail.test.utils import WagtailTestUtils
 
 
-class TestCoreJinja(TestCase, WagtailTestUtils):
-
+class TestCoreJinja(WagtailTestUtils, TestCase):
     def setUp(self):
-        self.engine = engines['jinja2']
+        self.engine = engines["jinja2"]
 
         self.user = self.create_superuser(
-            username='test',
-            email='test@email.com',
-            password='password'
+            username="test", email="test@email.com", password="password"
         )
         self.homepage = Page.objects.get(id=2)
 
@@ -28,23 +25,25 @@ class TestCoreJinja(TestCase, WagtailTestUtils):
 
     def dummy_request(self, user=None):
         site = Site.objects.get(is_default_site=True)
-
-        request = HttpRequest()
-        request.META['HTTP_HOST'] = site.hostname
-        request.META['SERVER_PORT'] = site.port
+        request = get_dummy_request(site=site)
         request.user = user or AnonymousUser()
         return request
 
     def test_userbar(self):
-        content = self.render('{{ wagtailuserbar() }}', {
-            PAGE_TEMPLATE_VAR: self.homepage,
-            'request': self.dummy_request(self.user)})
+        content = self.render(
+            "{{ wagtailuserbar() }}",
+            {
+                PAGE_TEMPLATE_VAR: self.homepage,
+                "request": self.dummy_request(self.user),
+            },
+        )
         self.assertIn("<!-- Wagtail user bar embed code -->", content)
 
     def test_userbar_anonymous_user(self):
-        content = self.render('{{ wagtailuserbar() }}', {
-            PAGE_TEMPLATE_VAR: self.homepage,
-            'request': self.dummy_request()})
+        content = self.render(
+            "{{ wagtailuserbar() }}",
+            {PAGE_TEMPLATE_VAR: self.homepage, "request": self.dummy_request()},
+        )
 
         # Make sure nothing was rendered
-        self.assertEqual(content, '')
+        self.assertEqual(content, "")

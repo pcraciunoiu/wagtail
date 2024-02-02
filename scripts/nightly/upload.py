@@ -4,24 +4,30 @@ import sys
 
 import boto3
 
-
-dist_folder = pathlib.Path.cwd() / 'dist'
+dist_folder = pathlib.Path.cwd() / "dist"
 
 try:
-    f = next(dist_folder.glob('*.whl'))
+    f = next(dist_folder.glob("*.whl"))
 except StopIteration:
-    print("No .whl files found in ./dist!")
+    print("No .whl files found in ./dist!")  # noqa: T201
     sys.exit()
 
-print("Uploading", f.name)
-s3 = boto3.client('s3')
-s3.upload_file(str(f), 'releases.wagtail.io', 'nightly/dist/' + f.name, ExtraArgs={'ACL': 'public-read'})
+print("Uploading", f.name)  # noqa: T201
+s3 = boto3.client("s3")
+s3.upload_file(
+    str(f),
+    "releases.wagtail.io",
+    "nightly/dist/" + f.name,
+    ExtraArgs={"ACL": "public-read"},
+)
 
-print("Updating latest.json")
+print("Updating latest.json")  # noqa: T201
 
-boto3.resource('s3').Object('releases.wagtail.io', 'nightly/latest.json').put(
-    ACL='public-read',
-    Body=json.dumps({
-        "url": 'https://releases.wagtail.io/nightly/dist/' + f.name,
-    })
+boto3.resource("s3").Object("releases.wagtail.io", "nightly/latest.json").put(
+    ACL="public-read",
+    Body=json.dumps(
+        {
+            "url": "https://releases.wagtail.org/nightly/dist/" + f.name,
+        }
+    ),
 )

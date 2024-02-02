@@ -2,9 +2,8 @@
 {% load i18n wagtailadmin_tags %}
 
 {% block css %}
-    <link rel="stylesheet" href="{% versioned_static 'wagtailadmin/css/vendor/jquery-ui/jquery-ui-1.10.3.verdant.css' %}" />
-    <link rel="stylesheet" href="{% versioned_static 'wagtailadmin/css/vendor/jquery.tagit.css' %}">
-    <link rel="stylesheet" href="{% versioned_static 'wagtailadmin/css/core.css' %}" type="text/css" />
+    <link rel="stylesheet" href="{% versioned_static 'wagtailadmin/css/core.css' %}">
+
     {% hook_output 'insert_global_admin_css' %}
 
     {% block extra_css %}{% endblock %}
@@ -32,6 +31,10 @@
             wagtailConfig.I18N_ENABLED = {% if i18n_enabled %}true{% else %}false{% endif %};
             wagtailConfig.LOCALES = {{ locales|safe }};
 
+            {% if locale %}
+                wagtailConfig.ACTIVE_CONTENT_LOCALE = '{{ locale.language_code }}'
+            {% endif %}
+
             wagtailConfig.STRINGS = {% js_translation_strings %};
 
             wagtailConfig.ADMIN_URLS = {
@@ -39,22 +42,22 @@
             };
         })(document, window);
     </script>
-    <script src="{% versioned_static 'wagtailadmin/js/vendor/jquery-3.5.1.min.js' %}"></script>
-    <script src="{% versioned_static 'wagtailadmin/js/vendor/jquery-ui-1.12.1.min.js' %}"></script>
+    {% wagtail_config as config %}
+    {{ config|json_script:"wagtail-config" }}
+    <script src="{% versioned_static 'wagtailadmin/js/vendor/jquery-3.6.0.min.js' %}"></script>
+    <script src="{% versioned_static 'wagtailadmin/js/vendor/jquery-ui-1.13.2.min.js' %}"></script>
     <script src="{% versioned_static 'wagtailadmin/js/vendor/jquery.datetimepicker.js' %}"></script>
-    <script src="{% versioned_static 'wagtailadmin/js/vendor/jquery.autosize.js' %}"></script>
     <script src="{% versioned_static 'wagtailadmin/js/vendor/bootstrap-transition.js' %}"></script>
     <script src="{% versioned_static 'wagtailadmin/js/vendor/bootstrap-modal.js' %}"></script>
-    <script src="{% versioned_static 'wagtailadmin/js/vendor/bootstrap-tab.js' %}"></script>
     <script src="{% versioned_static 'wagtailadmin/js/vendor/tag-it.js' %}"></script>
+    <script src="{% url 'wagtailadmin_javascript_catalog' %}"></script>
     <script src="{% versioned_static 'wagtailadmin/js/core.js' %}"></script>
     <script src="{% versioned_static 'wagtailadmin/js/vendor.js' %}"></script>
     <script src="{% versioned_static 'wagtailadmin/js/wagtailadmin.js' %}"></script>
+    <script src="{% versioned_static 'wagtailadmin/js/telepath/telepath.js' %}"></script>
+    <script src="{% versioned_static 'wagtailadmin/js/sidebar.js' %}"></script>
+
     {% hook_output 'insert_global_admin_js' %}
-
-
-
-    {% main_nav_js %}
 
     {% block extra_js %}{% endblock %}
 {% endblock %}

@@ -1,9 +1,13 @@
 .status-msg {
-    &.success {
-        color: $color-green-dark;
-    }
+  &.success {
+    color: theme('colors.positive.100');
+  }
 
-    &.failure {
-        color: $color-red-dark;
-    }
+  &.failure {
+    color: theme('colors.text-error');
+  }
+
+  &.warning {
+    color: theme('colors.warning.100');
+  }
 }

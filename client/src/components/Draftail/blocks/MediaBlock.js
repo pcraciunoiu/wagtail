@@ -2,9 +2,9 @@ import PropTypes from 'prop-types';
 import React, { Component } from 'react';
 import { Icon } from 'draftail';
 
+import { SelectionState, EditorState } from 'draft-js';
 import Tooltip from '../Tooltip/Tooltip';
 import Portal from '../../Portal/Portal';
-import { SelectionState, EditorState } from 'draft-js';
 
 // Constraints the maximum size of the tooltip.
 const OPTIONS_MAX_WIDTH = 300;
@@ -63,8 +63,14 @@ class MediaBlock extends Component {
     this.setState({
       showTooltipAt: {
         container: container,
-        top: rect.top - containerRect.top - (document.documentElement.scrollTop || document.body.scrollTop),
-        left: rect.left - containerRect.left - (document.documentElement.scrollLeft || document.body.scrollLeft),
+        top:
+          rect.top -
+          containerRect.top -
+          (document.documentElement.scrollTop || document.body.scrollTop),
+        left:
+          rect.left -
+          containerRect.left -
+          (document.documentElement.scrollLeft || document.body.scrollLeft),
         width: rect.width,
         height: rect.height,
         direction: maxWidth >= TOOLTIP_MAX_WIDTH ? 'left' : 'top-left',
@@ -96,7 +102,7 @@ class MediaBlock extends Component {
   }
 
   render() {
-    const { blockProps, src, alt } = this.props;
+    const { blockProps, src, alt, fallbackText } = this.props;
     const { showTooltipAt } = this.state;
     const { entityType } = blockProps;
 
@@ -111,9 +117,18 @@ class MediaBlock extends Component {
         <span className="MediaBlock__icon-wrapper" aria-hidden>
           <Icon icon={entityType.icon} className="MediaBlock__icon" />
         </span>
+        <img
+          className="MediaBlock__img"
+          src={src}
+          alt={alt}
+          width="256"
+          decoding="async"
+          loading="lazy"
+        />
 
-        <img className="MediaBlock__img" src={src} alt={alt} width="256" />
-
+        {src ? null : (
+          <span className="MediaBlock__fallback">{fallbackText}</span>
+        )}
         {showTooltipAt && this.renderTooltip()}
       </button>
     );
@@ -129,12 +144,14 @@ MediaBlock.propTypes = {
   block: PropTypes.object.isRequired,
   src: PropTypes.string,
   alt: PropTypes.string,
+  fallbackText: PropTypes.string,
   children: PropTypes.node.isRequired,
 };
 
 MediaBlock.defaultProps = {
   src: null,
   alt: '',
+  fallbackText: null,
 };
 
 export default MediaBlock;

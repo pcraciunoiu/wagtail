@@ -8,10 +8,10 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Wagtail\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2021-01-18 17:30+0000\n"
-"PO-Revision-Date: 2021-01-21 01:13+0000\n"
-"Last-Translator: Awatea Randall <awatea@octave.nz>\n"
-"Language-Team: Maori (http://www.transifex.com/torchbox/wagtail/language/"
+"POT-Creation-Date: 2023-10-19 23:14+0100\n"
+"PO-Revision-Date: 2014-02-20 21:05+0000\n"
+"Last-Translator: Awatea Randall <awatea@octave.nz>, 2021\n"
+"Language-Team: Maori (http://app.transifex.com/torchbox/wagtail/language/"
 "mi/)\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -21,9 +21,6 @@ msgstr ""
 
 msgid "Wagtail images"
 msgstr "Whakaahua-a-Wagtail"
-
-msgid "GIF, JPEG, PNG, WEBP"
-msgstr "GIF, JPEG, PNG, WEBP"
 
 #, python-format
 msgid ""
@@ -38,26 +35,29 @@ msgid "Supported formats: %(supported_formats)s."
 msgstr "Pou hōputu: %(supported_formats)s. "
 
 #, python-format
-msgid "Not a supported image format. Supported formats: %s."
-msgstr "Ehara tēnei whakaahua e pou hōputu. Ngā pou hōputu: %s. "
-
-#, python-format
-msgid "Not a valid %s image."
-msgstr "Ehara he pono %s whakaahua."
-
-#, python-format
-msgid "This file is too big (%%s). Maximum filesize %s."
-msgstr "He nui rawa atu tēnei kōnae (%%s). Korahi whakatīeke ō te kōnae %s."
-
-#, python-format
-msgid "This file has too many pixels (%%s). Maximum pixels %s."
+msgid "Not a supported image format. Supported formats: %(supported_formats)s."
 msgstr ""
-"He nui rawa atu te nama ō tongiiti i tēnei kōnae (%%s). Tongiiti whakatīeke "
-"%s."
+"Ehara tēnei whakaahua e pou hōputu. Ngā pou hōputu: %(supported_formats)s. "
 
 #, python-format
-msgid "This file is too big. Maximum filesize %s."
-msgstr "He nui rawa atu tēnei kōnae. Korahi whakatieke ō te kōnae %s."
+msgid ""
+"This file is too big (%(file_size)s). Maximum filesize %(max_filesize)s."
+msgstr ""
+"He nui rawa atu tēnei kōnae (%(file_size)s). Korahi whakatīeke ō te kōnae "
+"%(max_filesize)s."
+
+#, python-format
+msgid ""
+"This file has too many pixels (%(num_pixels)s). Maximum pixels "
+"%(max_pixels_count)s."
+msgstr ""
+"He nui rawa atu te nama ō tongiiti i tēnei kōnae (%(num_pixels)s). Tongiiti "
+"whakatīeke %(max_pixels_count)s."
+
+#, python-format
+msgid "This file is too big. Maximum filesize %(max_filesize)s."
+msgstr ""
+"He nui rawa atu tēnei kōnae. Korahi whakatieke ō te kōnae %(max_filesize)s."
 
 msgid "Full width"
 msgstr "Pangoro rangiwhāwhātanga"
@@ -67,6 +67,12 @@ msgstr "Tīaroaro-mauī"
 
 msgid "Right-aligned"
 msgstr "Tīaroaro-matau"
+
+msgid "Collection"
+msgstr "Kohikohinga"
+
+msgid "Alt text"
+msgstr "Manohi kuputuhi"
 
 msgid "Filter"
 msgstr "Tātari"
@@ -110,6 +116,9 @@ msgstr "Whakarerekē"
 msgid "Edit any image"
 msgstr "Whakarerekē ngā whakaahua"
 
+msgid "Choose"
+msgstr "Kōhiti"
+
 msgid "title"
 msgstr "taitara"
 
@@ -137,20 +146,23 @@ msgstr "whakaahua"
 msgid "images"
 msgstr "Ngā whakaahua"
 
-msgid "Choose an image"
-msgstr "Kōhiti he whakaahua"
+#, python-format
+msgid "Used %(usage_count)s time"
+msgid_plural "Used %(usage_count)s times"
+msgstr[0] "I whakamahi %(usage_count)s taima"
+msgstr[1] "I whakamahi %(usage_count)s taima"
 
-msgid "Search"
-msgstr "Haha"
+msgid "Yes, delete"
+msgstr "Ae, muku"
 
-msgid "Upload"
-msgstr "Tukuatu"
+msgid "No, don't delete"
+msgstr "Kao, kaua e muku"
 
 msgid "Popular tags"
 msgstr "Ngā pinetohu rongonui"
 
-msgid "Uploading…"
-msgstr "Tukuna atu..."
+msgid "New"
+msgstr "Hou"
 
 msgid "Latest images"
 msgstr "Ngā whakaahua hou"
@@ -173,15 +185,6 @@ msgstr "Tāpiri whakaahua"
 msgid "Save"
 msgstr "Puritia"
 
-msgid "Delete image"
-msgstr "Muku whakaahua"
-
-msgid "Are you sure you want to delete this image?"
-msgstr "E pirangi ana koe kī te mukuhia tēnei whakahua?"
-
-msgid "Yes, delete"
-msgstr "Ae, muku"
-
 #, python-format
 msgid "Editing image %(title)s"
 msgstr "E whakarerekē ana a whakahua %(title)s"
@@ -189,20 +192,65 @@ msgstr "E whakarerekē ana a whakahua %(title)s"
 msgid "Editing"
 msgstr "Whakarerekē"
 
+msgid "Delete image"
+msgstr "Muku whakaahua"
+
+msgid "Filesize"
+msgstr "Kōnae korahi"
+
+msgid "File not found"
+msgstr "Ehara i kimi te kōnae"
+
+msgid "Usage"
+msgstr "Whakamahi"
+
 msgid "Images"
 msgstr "Ngā whakaahua"
 
-msgid "Image '{0}' updated."
-msgstr "Whakahua '{0}' kua whakahou"
+msgid "URL"
+msgstr "URL"
+
+msgid "Preview"
+msgstr "Titiro"
+
+msgid "Or choose from your computer"
+msgstr "Kōhiti nō tō rorohiko rānei"
+
+msgid "Add to collection:"
+msgstr "Tāpiri ki te kohikohinga:"
+
+msgid "Sorry, upload failed."
+msgstr "Aroha mai, kua rahua te tukuatu."
+
+msgid "Server Error"
+msgstr "Hapa rorohiko"
+
+msgid "Delete"
+msgstr "Muku"
+
+msgid "Upload"
+msgstr "Tukuatu"
+
+msgid "Uploading…"
+msgstr "Tukuna atu..."
+
+msgid "Choose an image"
+msgstr "Kōhiti he whakaahua"
+
+#, python-format
+msgid "Image '%(image_title)s' updated."
+msgstr "Whakahua '%(image_title)s' kua whakahou"
 
 msgid "The image could not be saved due to errors."
 msgstr "Ehara ka taea te puritia kī te whakahua nei, he raruraru "
 
-msgid "Image '{0}' deleted."
-msgstr "Whakahua '{0}' kua mukuhia."
+#, python-format
+msgid "Image '%(image_title)s' deleted."
+msgstr "Whakahua '%(image_title)s' kua mukuhia."
 
-msgid "Image '{0}' added."
-msgstr "Whakahua '{0}' kua tāpiri."
+#, python-format
+msgid "Image '%(image_title)s' added."
+msgstr "Whakahua '%(image_title)s' kua tāpiri."
 
 msgid "The image could not be created due to errors."
 msgstr "Ehara ka taea ki te hangaia te whakahua nei, he raruraru "

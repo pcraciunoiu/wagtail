@@ -1,6 +1,3 @@
-from __future__ import absolute_import, unicode_literals
-
-
 #
 # Base classes
 #
@@ -19,17 +16,19 @@ class SearchQuery:
     def __repr__(self):
         raise NotImplementedError
 
+
 #
 # Basic query classes
 #
 
 
 class PlainText(SearchQuery):
-    OPERATORS = ['and', 'or']
-    DEFAULT_OPERATOR = 'and'
+    OPERATORS = ["and", "or"]
+    DEFAULT_OPERATOR = "and"
 
-    def __init__(self, query_string: str, operator: str = DEFAULT_OPERATOR,
-                 boost: float = 1):
+    def __init__(
+        self, query_string: str, operator: str = DEFAULT_OPERATOR, boost: float = 1
+    ):
         self.query_string = query_string
         self.operator = operator.lower()
         if self.operator not in self.OPERATORS:
@@ -37,7 +36,9 @@ class PlainText(SearchQuery):
         self.boost = boost
 
     def __repr__(self):
-        return '<PlainText {} operator={} boost={}>'.format(repr(self.query_string), repr(self.operator), repr(self.boost))
+        return "<PlainText {} operator={} boost={}>".format(
+            repr(self.query_string), repr(self.operator), repr(self.boost)
+        )
 
 
 class Phrase(SearchQuery):
@@ -45,12 +46,20 @@ class Phrase(SearchQuery):
         self.query_string = query_string
 
     def __repr__(self):
-        return '<Phrase {}>'.format(repr(self.query_string))
+        return f"<Phrase {repr(self.query_string)}>"
+
+
+class Fuzzy(SearchQuery):
+    def __init__(self, query_string: str):
+        self.query_string = query_string
+
+    def __repr__(self):
+        return f"<Fuzzy {repr(self.query_string)}>"
 
 
 class MatchAll(SearchQuery):
     def __repr__(self):
-        return '<MatchAll>'
+        return "<MatchAll>"
 
 
 class Boost(SearchQuery):
@@ -59,7 +68,7 @@ class Boost(SearchQuery):
         self.boost = boost
 
     def __repr__(self):
-        return '<Boost {} boost={}>'.format(repr(self.subquery), repr(self.boost))
+        return f"<Boost {repr(self.subquery)} boost={repr(self.boost)}>"
 
 
 #
@@ -72,7 +81,9 @@ class And(SearchQuery):
         self.subqueries = subqueries
 
     def __repr__(self):
-        return '<And {}>'.format(' '.join(repr(subquery) for subquery in self.subqueries))
+        return "<And {}>".format(
+            " ".join(repr(subquery) for subquery in self.subqueries)
+        )
 
 
 class Or(SearchQuery):
@@ -80,7 +91,9 @@ class Or(SearchQuery):
         self.subqueries = subqueries
 
     def __repr__(self):
-        return '<Or {}>'.format(' '.join(repr(subquery) for subquery in self.subqueries))
+        return "<Or {}>".format(
+            " ".join(repr(subquery) for subquery in self.subqueries)
+        )
 
 
 class Not(SearchQuery):
@@ -88,7 +101,7 @@ class Not(SearchQuery):
         self.subquery = subquery
 
     def __repr__(self):
-        return '<Not {}>'.format(repr(self.subquery))
+        return f"<Not {repr(self.subquery)}>"
 
 
 MATCH_ALL = MatchAll()

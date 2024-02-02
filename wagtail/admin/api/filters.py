@@ -1,8 +1,8 @@
 from rest_framework.filters import BaseFilterBackend
 
+from wagtail import hooks
 from wagtail.api.v2.utils import BadRequestError, parse_boolean
-from wagtail.core import hooks
-from wagtail.core.models import UserPagePermissionsProxy
+from wagtail.permissions import page_permission_policy
 
 
 class HasChildrenFilter(BaseFilterBackend):
@@ -10,10 +10,11 @@ class HasChildrenFilter(BaseFilterBackend):
     Filters the queryset by checking if the pages have children or not.
     This is useful when you want to get just the branches or just the leaves.
     """
+
     def filter_queryset(self, request, queryset, view):
-        if 'has_children' in request.GET:
+        if "has_children" in request.GET:
             try:
-                has_children_filter = parse_boolean(request.GET['has_children'])
+                has_children_filter = parse_boolean(request.GET["has_children"])
             except ValueError:
                 raise BadRequestError("has_children must be 'true' or 'false'")
 
@@ -27,15 +28,18 @@ class HasChildrenFilter(BaseFilterBackend):
 
 class ForExplorerFilter(BaseFilterBackend):
     def filter_queryset(self, request, queryset, view):
-        if request.GET.get('for_explorer'):
-            if not hasattr(queryset, '_filtered_by_child_of'):
-                raise BadRequestError("filtering by for_explorer without child_of is not supported")
+        if request.GET.get("for_explorer"):
+            if not hasattr(queryset, "_filtered_by_child_of"):
+                raise BadRequestError(
+                    "filtering by for_explorer without child_of is not supported"
+                )
 
             parent_page = queryset._filtered_by_child_of
-            for hook in hooks.get_hooks('construct_explorer_page_queryset'):
+            for hook in hooks.get_hooks("construct_explorer_page_queryset"):
                 queryset = hook(parent_page, queryset, request)
 
-            user_perms = UserPagePermissionsProxy(request.user)
-            queryset = queryset & user_perms.explorable_pages()
+            queryset = (
+                page_permission_policy.explorable_instances(request.user) & queryset
+            )
 
         return queryset

@@ -11,10 +11,10 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Wagtail\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2021-01-18 17:30+0000\n"
-"PO-Revision-Date: 2020-09-07 01:43+0000\n"
-"Last-Translator: Tetsuya Morimoto <tetsuya.morimoto@gmail.com>\n"
-"Language-Team: Japanese (http://www.transifex.com/torchbox/wagtail/language/"
+"POT-Creation-Date: 2023-10-19 23:14+0100\n"
+"PO-Revision-Date: 2014-02-20 21:04+0000\n"
+"Last-Translator: 石田秀 <ishidashu@gmail.com>, 2015\n"
+"Language-Team: Japanese (http://app.transifex.com/torchbox/wagtail/language/"
 "ja/)\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -24,6 +24,15 @@ msgstr ""
 
 msgid "Wagtail redirects"
 msgstr "Wagtailリダイレクト"
+
+msgid "Type"
+msgstr "タイプ"
+
+msgid "Permanent"
+msgstr "恒久"
+
+msgid "All"
+msgstr "全て"
 
 msgid "From site"
 msgstr "元サイト"
@@ -69,6 +78,9 @@ msgstr "ページにリダイレクト"
 msgid "redirect to any URL"
 msgstr "任意のURLにリダイレクト"
 
+msgid "created at"
+msgstr "作成日"
+
 msgid "temporary"
 msgstr "一時"
 
@@ -86,22 +98,6 @@ msgstr "リダイレクト"
 
 msgid "Import redirects"
 msgstr "リダイレクトをインポート"
-
-msgid ""
-"\n"
-"                <p>Select a file where redirects are separated into rows and "
-"contains the columns representing <code>from</code> and <code>to</code> "
-"(they can be named anything).</p>\n"
-"                <p>After submitting you will be taken to a confirmation view "
-"where you can customize your redirects before import.</p>\n"
-"            "
-msgstr ""
-"\n"
-"                <p>リダイレクトは<code>from</code>と<code>to</code>の列で構成"
-"されます。複数のリダイレクトは複数行として含められます。ファイルを選択してく"
-"ださい (名前は何でも構いません) 。</p>\n"
-"                <p>ファイルをアップロード後、確認画面でインポート前にカスタマ"
-"イズできます。</p>"
 
 msgid "Import"
 msgstr "インポート"
@@ -166,24 +162,8 @@ msgstr "続ける"
 msgid "Site"
 msgstr "サイト"
 
-msgid "Type"
-msgstr "タイプ"
-
 msgid "Edit this redirect"
 msgstr "リダイレクトを編集"
-
-#, python-format
-msgid ""
-"\n"
-"            There is %(counter)s match\n"
-"        "
-msgid_plural ""
-"\n"
-"            There are %(counter)s matches\n"
-"        "
-msgstr[0] ""
-"\n"
-"%(counter)s件の一致があります。"
 
 #, python-format
 msgid "Sorry, no redirects match \"<em>%(query_string)s</em>\""
@@ -191,8 +171,8 @@ msgstr "<em>%(query_string)s</em>に一致するリダイレクトはありま�
 
 #, python-format
 msgid ""
-"No redirects have been created. Why not <a href="
-"\"%(wagtailredirects_add_redirect_url)s\">add one</a>?"
+"No redirects have been created. Why not <a "
+"href=\"%(wagtailredirects_add_redirect_url)s\">add one</a>?"
 msgstr ""
 "リダイレクトはありません。 <a href=\"%(wagtailredirects_add_redirect_url)s\">"
 "新しく作成</a>しますか？"
@@ -200,8 +180,9 @@ msgstr ""
 msgid "Search redirects"
 msgstr "リダイレクトを検索"
 
-msgid "Redirect '{0}' updated."
-msgstr "リダイレクト：'{0}'が更新されました。"
+#, python-format
+msgid "Redirect '%(redirect_title)s' updated."
+msgstr "リダイレクト：'%(redirect_title)s'が更新されました。"
 
 msgid "Edit"
 msgstr "編集"
@@ -209,21 +190,24 @@ msgstr "編集"
 msgid "The redirect could not be saved due to errors."
 msgstr "リダイレクトはエラーにより保存されませんでした。"
 
-msgid "Redirect '{0}' deleted."
-msgstr "リダイレクト： '{0}'が削除されました。"
+#, python-format
+msgid "Redirect '%(redirect_title)s' deleted."
+msgstr "リダイレクト： '%(redirect_title)s'が削除されました。"
 
-msgid "Redirect '{0}' added."
-msgstr "リダイレクト： '{0}'が追加されました。"
+#, python-format
+msgid "Redirect '%(redirect_title)s' added."
+msgstr "リダイレクト： '%(redirect_title)s'が追加されました。"
 
 msgid "The redirect could not be created due to errors."
 msgstr "リダイレクトはエラーにより作成されませんでした。"
 
-msgid "File format of type \"{}\" is not supported"
-msgstr "\"{}\" のファイルフォーマットはサポートしていません"
+#, python-format
+msgid "File format of type \"%(extension)s\" is not supported"
+msgstr "\"%(extension)s\" のファイルフォーマットはサポートしていません"
 
 #, python-format
-msgid "Imported file has a wrong encoding: %s"
-msgstr "不正なエンコーディングをもつインポートファイル: %s"
+msgid "Imported file has a wrong encoding: %(error_message)s"
+msgstr "不正なエンコーディングをもつインポートファイル: %(error_message)s"
 
 #, python-format
 msgid "%(error)s encountered while trying to read file: %(filename)s"

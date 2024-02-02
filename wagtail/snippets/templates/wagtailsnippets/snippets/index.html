@@ -1,23 +1,15 @@
-{% extends "wagtailadmin/base.html" %}
-{% load i18n %}
-{% block titletag %}{% trans "Snippets" %}{% endblock %}
-{% block content %}
-    {% trans "Snippets" as snippets_str %}
-    {% include "wagtailadmin/shared/header.html" with title=snippets_str icon="snippet" %}
+{% extends "wagtailadmin/generic/index.html" %}
+{% load i18n wagtailadmin_tags %}
 
-    <div class="nice-padding">
-        <ul class="listing">
-            {% for model_opts in snippet_model_opts %}
-                <li>
-                    <div class="row row-flush title">
-                        <div class="title-wrapper">
-                            <a href="{% url 'wagtailsnippets:list' model_opts.app_label model_opts.model_name %}" class="col6">
-                                {{ model_opts.verbose_name_plural|capfirst }}
-                            </a>
-                        </div>
-                    </div>
-                </li>
-            {% endfor %}
-        </ul>
-    </div>
+{% block extra_js %}
+    <script>
+        window.wagtailConfig.BULK_ACTION_ITEM_TYPE = 'SNIPPET';
+    </script>
+    <script defer src="{% versioned_static 'wagtailadmin/js/bulk-actions.js' %}"></script>
+    {{ block.super }}
+{% endblock %}
+
+{% block bulk_actions %}
+    {% trans "Select all snippets in listing" as select_all_text %}
+    {% include 'wagtailadmin/bulk_actions/footer.html' with select_all_obj_text=select_all_text app_label=model_opts.app_label model_name=model_opts.model_name objects=page_obj %}
 {% endblock %}

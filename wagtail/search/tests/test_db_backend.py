@@ -1,32 +1,20 @@
 import unittest
 
 from django.test import TestCase
+from django.test.utils import override_settings
 
 from .test_backends import BackendTests
 
 
+@override_settings(
+    WAGTAILSEARCH_BACKENDS={
+        "default": {
+            "BACKEND": "wagtail.search.backends.database.fallback",
+        }
+    }
+)
 class TestDBBackend(BackendTests, TestCase):
-    backend_path = 'wagtail.search.backends.db'
-
-    # Doesn't support autocomplete
-    @unittest.expectedFailure
-    def test_autocomplete(self):
-        super().test_autocomplete()
-
-    # Doesn't support autocomplete
-    @unittest.expectedFailure
-    def test_autocomplete_not_affected_by_stemming(self):
-        super().test_autocomplete_not_affected_by_stemming()
-
-    # Doesn't support autocomplete
-    @unittest.expectedFailure
-    def test_autocomplete_uses_autocompletefield(self):
-        super().test_autocomplete_uses_autocompletefield()
-
-    # Doesn't support autocomplete
-    @unittest.expectedFailure
-    def test_autocomplete_with_fields_arg(self):
-        super().test_autocomplete_with_fields_arg()
+    backend_path = "wagtail.search.backends.database.fallback"
 
     # Doesn't support ranking
     @unittest.expectedFailure
@@ -62,11 +50,6 @@ class TestDBBackend(BackendTests, TestCase):
     @unittest.expectedFailure
     def test_search_callable_field(self):
         super().test_search_callable_field()
-
-    # Database backend always uses `icontains`, so always autocomplete
-    @unittest.expectedFailure
-    def test_incomplete_term(self):
-        super().test_incomplete_term()
 
     # Database backend always uses `icontains`, so always autocomplete
     @unittest.expectedFailure

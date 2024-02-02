@@ -1,186 +1,189 @@
-header {
-    padding-top: 1em;
-    padding-bottom: 1em;
-    background-color: $color-header-bg;
-    margin-bottom: 2em;
-    color: $color-white;
+@use 'sass:math';
+@use 'sass:color';
+
+.w-header {
+  @apply w-text-text-label;
+  margin-bottom: theme('spacing.8');
+
+  h1,
+  h2 {
+    @apply w-text-text-label;
+    margin: 0;
+  }
+
+  h1,
+  .w-header__title {
+    @apply w-h1;
+    position: relative;
+  }
+
+  .w-header__glyph {
+    position: absolute;
+    inset-inline-start: calc(0 - theme('spacing.11'));
+    vertical-align: text-top;
+
+    &.icon {
+      top: 0.125em;
+      max-width: 1em;
+      max-height: 1em;
+    }
+
+    &.avatar {
+      margin-inline-start: calc(0 - theme('spacing.2'));
+    }
+  }
+
+  .w-header__subtitle {
+    margin-inline-start: theme('spacing[1.5]');
+    font-weight: theme('fontWeight.normal');
+  }
+
+  .w-header__description {
+    font-size: theme('fontSize.18');
+    font-weight: theme('fontWeight.normal');
+  }
+
+  // Give padding to the rows inside of headers so that nested breadcrumbs aren't padded by their parent header el.
+  // Use w-header--with-padding for headers that don't contain .row elements.
+  &.w-header--with-padding,
+  > .row {
+    padding-top: theme('spacing.2');
+    padding-bottom: theme('spacing.[2.5]');
+    padding-inline-start: 110px;
+    padding-inline-end: theme('spacing.5');
+  }
+
+  &.w-header--merged .w-breadcrumbs {
+    padding-inline-start: $mobile-nav-indent;
+  }
+
+  .col {
+    float: inline-start;
+    margin-inline-end: 2em;
+  }
+
+  .left {
+    float: inline-start;
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+  }
+
+  .right {
+    display: flex;
+    gap: theme('spacing[2.5]');
+    text-align: end;
+    float: inline-end;
+  }
+
+  // For case where content below header should merge with it
+  &.w-header--merged {
+    margin-bottom: 0;
+    padding-bottom: theme('spacing.1');
+  }
+
+  &.w-header--no-border {
+    border: 0;
+  }
+
+  &.w-header--merged.w-header--no-border {
+    padding-bottom: 0;
+  }
+
+  .error-message {
+    color: inherit;
+  }
+
+  .last-updated {
+    ul {
+      padding: 0;
+    }
+
+    li {
+      display: inline;
+      margin-inline-end: 2em;
+    }
+
+    .avatar.small {
+      margin-inline-start: 0;
+    }
 
     a {
-        color: $color-white;
+      font-weight: theme('fontWeight.bold');
     }
-
-    h1,
-    h2 {
-        margin: 0;
-        color: $color-white;
-    }
-
-    h1 {
-        padding: 0.2em 0;
-
-        &.icon:before {
-            width: 1em;
-            display: none;
-            margin-right: 0.4em;
-            font-size: 1.5em;
-        }
-    }
-
-    .col {
-        float: left;
-        margin-right: 2em;
-    }
-
-    .left {
-        float: left;
-
-        .hasform &:first-child {
-            padding-bottom: 0.5em;
-            float: none;
-        }
-    }
-
-    .right {
-        text-align: right;
-        float: right;
-    }
-
-    // For case where content below header should merge with it
-    &.merged {
-        margin-bottom: 0;
-    }
-
-    &.tab-merged {
-        padding-left: $desktop-nice-padding;
-        padding-right: $desktop-nice-padding;
-
-        .right:last-child {
-            padding-right: 0;
-        }
-    }
-
-    &.tab-merged,
-    &.no-border {
-        border: 0;
-
-        @include media-breakpoint-down(xs) {
-            // To all hamburger menu to be visible
-            padding-left: 1.6em;
-            padding-right: 1.6em;
-            padding-top: 11px;
-
-            .nice-padding {
-                margin-left: -$desktop-nice-padding;
-            }
-        }
-
-    }
-
-    &.merged.no-border {
-        padding-bottom: 0;
-    }
-
-    &.no-v-padding {
-        padding-top: 0;
-        padding-bottom: 0;
-    }
-
-    .button {
-        background-color: $color-teal-darker;
-
-        &:hover {
-            background-color: $color-teal-dark;
-        }
-    }
-
-    label {
-        @include visuallyhidden();
-    }
-
-    input[type=text],
-    select {
-        border-width: 0;
-
-        &:focus {
-            background-color: $color-white;
-        }
-    }
-
-    .error-message {
-        color: inherit;
-    }
-
-    .fields {
-        margin-top: -0.5em;
-
-        li {
-            padding-bottom: 0;
-        }
-
-        .field {
-            padding: 0;
-        }
-    }
-
-    .field-content {
-        width: auto;
-        padding: 0;
-    }
+  }
 }
 
 @include media-breakpoint-up(sm) {
-    header {
-        padding-top: 1.5em;
-        padding-bottom: 1.5em;
-
-        .left {
-            float: left;
-            margin-right: 0;
-
-            &:first-child {
-                padding-bottom: 0;
-                float: left;
-            }
-        }
-
-        .second {
-            clear: none;
-
-            .right,
-            .left {
-                float: right;
-            }
-        }
-
-        h1.icon:before {
-            display: inline-block;
-        }
-
-        .col3 {
-            @include column(3);
-        }
-
-        .col3.actionbutton {
-            width: auto;
-        }
-
-        .col6 {
-            @include column(6);
-        }
-
-        .col9 {
-            @include column(9);
-        }
+  .w-header {
+    .row {
+      padding-inline-start: $desktop-nice-padding;
+      padding-inline-end: $desktop-nice-padding;
+      padding-top: theme('spacing.10');
     }
+
+    &.w-header--merged .w-breadcrumbs {
+      padding-inline-start: 0;
+    }
+
+    .w-header__glyph {
+      &.avatar {
+        margin-inline-start: calc(0 - theme('spacing.9'));
+      }
+    }
+
+    .left {
+      float: inline-start;
+      margin-inline-end: 0;
+
+      &:first-child {
+        padding-bottom: 0;
+        float: inline-start;
+      }
+    }
+
+    .second {
+      clear: none;
+
+      .right,
+      .left {
+        float: inline-end;
+      }
+    }
+
+    .col3 {
+      @include column(3);
+    }
+
+    .col3.actionbutton {
+      width: auto;
+    }
+
+    .col6 {
+      @include column(6);
+    }
+
+    .col9 {
+      @include column(9);
+    }
+  }
 }
 
-.header-title {
-    @include media-breakpoint-down(xs) {
-        padding-left: $mobile-nav-indent;
-    }
+.w-slim-header {
+  &__search-form {
+    @apply w-mx-2 w-flex w-items-center w-gap-2;
+  }
 
-    &-icon {
-        @include svg-icon();
-        margin-right: 0.5em;
+  .w-field__wrapper:not(.w-drilldown .w-field__wrapper) {
+    @apply w-mb-0;
+
+    .w-field__input {
+      @apply w-mt-0;
+
+      > input {
+        @apply w-text-16;
+        min-height: theme('spacing.10');
+      }
     }
+  }
 }

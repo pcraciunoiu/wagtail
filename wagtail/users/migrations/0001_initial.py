@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 from django.conf import settings
 from django.db import migrations, models
 
@@ -11,25 +10,46 @@ class Migration(migrations.Migration):
 
     operations = [
         migrations.CreateModel(
-            name='UserProfile',
+            name="UserProfile",
             fields=[
-                ('id', models.AutoField(serialize=False, verbose_name='ID', auto_created=True, primary_key=True)),
-                ('submitted_notifications', models.BooleanField(
-                    default=True,
-                    help_text='Receive notification when a page is submitted for moderation'
-                )),
-                ('approved_notifications', models.BooleanField(
-                    default=True,
-                    help_text='Receive notification when your page edit is approved'
-                )),
-                ('rejected_notifications', models.BooleanField(
-                    default=True,
-                    help_text='Receive notification when your page edit is rejected'
-                )),
-                ('user', models.OneToOneField(on_delete=models.CASCADE, to=settings.AUTH_USER_MODEL)),
+                (
+                    "id",
+                    models.AutoField(
+                        serialize=False,
+                        verbose_name="ID",
+                        auto_created=True,
+                        primary_key=True,
+                    ),
+                ),
+                (
+                    "submitted_notifications",
+                    models.BooleanField(
+                        default=True,
+                        help_text="Receive notification when a page is submitted for moderation",
+                    ),
+                ),
+                (
+                    "approved_notifications",
+                    models.BooleanField(
+                        default=True,
+                        help_text="Receive notification when your page edit is approved",
+                    ),
+                ),
+                (
+                    "rejected_notifications",
+                    models.BooleanField(
+                        default=True,
+                        help_text="Receive notification when your page edit is rejected",
+                    ),
+                ),
+                (
+                    "user",
+                    models.OneToOneField(
+                        on_delete=models.CASCADE, to=settings.AUTH_USER_MODEL
+                    ),
+                ),
             ],
-            options={
-            },
+            options={},
             bases=(models.Model,),
         ),
     ]

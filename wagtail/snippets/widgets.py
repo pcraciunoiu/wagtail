@@ -1,75 +1,70 @@
-import json
-
 from django import forms
-from django.contrib.admin.utils import quote
-from django.template.loader import render_to_string
+from django.core.exceptions import ImproperlyConfigured
 from django.urls import reverse
+from django.urls.exceptions import NoReverseMatch
+from django.utils.functional import cached_property
 from django.utils.translation import gettext_lazy as _
 
 from wagtail.admin.staticfiles import versioned_static
-from wagtail.admin.widgets import AdminChooser
+from wagtail.admin.widgets import BaseChooser, BaseChooserAdapter
 from wagtail.admin.widgets.button import ListingButton
+from wagtail.telepath import register
 
 
-class AdminSnippetChooser(AdminChooser):
+class AdminSnippetChooser(BaseChooser):
+    display_title_key = "string"
+    classname = "snippet-chooser"
+    js_constructor = "SnippetChooser"
 
     def __init__(self, model, **kwargs):
-        self.target_model = model
-        name = self.target_model._meta.verbose_name
-        self.choose_one_text = _('Choose %s') % name
-        self.choose_another_text = _('Choose another %s') % name
-        self.link_to_chosen_text = _('Edit this %s') % name
+        self.model = model
+        name = self.model._meta.verbose_name
+        self.choose_one_text = _("Choose %(object)s") % {"object": name}
+        self.choose_another_text = _("Choose another %(object)s") % {"object": name}
+        self.link_to_chosen_text = _("Edit this %(object)s") % {"object": name}
 
         super().__init__(**kwargs)
 
-    def get_value_data(self, value):
-        if value is None:
-            return None
-        elif isinstance(value, self.target_model):
-            instance = value
-        else:  # assume instance ID
-            instance = self.target_model.objects.get(pk=value)
+    def get_chooser_modal_url(self):
+        try:
+            return reverse(
+                self.model.snippet_viewset.chooser_viewset.get_url_name("choose")
+            )
+        except NoReverseMatch:
+            # This most likely failed because the model is not registered as a snippet.
+            # Check whether this is the case, and if so, output a more helpful error message
+            from .models import get_snippet_models
 
-        app_label = self.target_model._meta.app_label
-        model_name = self.target_model._meta.model_name
-        quoted_id = quote(instance.pk)
-        edit_url = reverse('wagtailsnippets:edit', args=[app_label, model_name, quoted_id])
+            if self.model not in get_snippet_models():
+                raise ImproperlyConfigured(
+                    "AdminSnippetChooser cannot be used on non-snippet model %r"
+                    % self.model
+                )
+            else:
+                raise
 
-        return {
-            'id': instance.pk,
-            'string': str(instance),
-            'edit_url': edit_url,
-        }
-
-    def render_html(self, name, value_data, attrs):
-        value_data = value_data or {}
-
-        original_field_html = super().render_html(name, value_data.get('id'), attrs)
-
-        return render_to_string("wagtailsnippets/widgets/snippet_chooser.html", {
-            'widget': self,
-            'original_field_html': original_field_html,
-            'attrs': attrs,
-            'value': bool(value_data),  # only used by chooser.html to identify blank values
-            'display_title': value_data.get('string', ''),
-            'edit_url': value_data.get('edit_url', ''),
-        })
-
-    def render_js_init(self, id_, name, value_data):
-        model = self.target_model
-
-        return "createSnippetChooser({id}, {model});".format(
-            id=json.dumps(id_),
-            model=json.dumps('{app}/{model}'.format(
-                app=model._meta.app_label,
-                model=model._meta.model_name)))
-
-    @property
+    @cached_property
     def media(self):
-        return forms.Media(js=[
-            versioned_static('wagtailsnippets/js/snippet-chooser-modal.js'),
-            versioned_static('wagtailsnippets/js/snippet-chooser.js'),
-        ])
+        return forms.Media(
+            js=[
+                versioned_static("wagtailsnippets/js/snippet-chooser.js"),
+            ]
+        )
+
+
+class SnippetChooserAdapter(BaseChooserAdapter):
+    js_constructor = "wagtail.snippets.widgets.SnippetChooser"
+
+    @cached_property
+    def media(self):
+        return forms.Media(
+            js=[
+                versioned_static("wagtailsnippets/js/snippet-chooser-telepath.js"),
+            ]
+        )
+
+
+register(SnippetChooserAdapter(), AdminSnippetChooser)
 
 
 class SnippetListingButton(ListingButton):

@@ -3,22 +3,30 @@
 # This file is distributed under the same license as the PACKAGE package.
 #
 # Translators:
+# Amir Mahmoodi, 2022
+# Amir Mahmoodi, 2022
 # pyzenberg <pyzenberg@gmail.com>, 2017
 # pyzenberg <pyzenberg@gmail.com>, 2017
 msgid ""
 msgstr ""
 "Project-Id-Version: Wagtail\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2021-01-18 17:30+0000\n"
-"PO-Revision-Date: 2020-07-24 16:51+0000\n"
-"Last-Translator: Matt Westcott <matthew@torchbox.com>\n"
-"Language-Team: Persian (http://www.transifex.com/torchbox/wagtail/language/"
+"POT-Creation-Date: 2023-10-19 23:14+0100\n"
+"PO-Revision-Date: 2014-02-20 21:04+0000\n"
+"Last-Translator: pyzenberg <pyzenberg@gmail.com>, 2017\n"
+"Language-Team: Persian (http://app.transifex.com/torchbox/wagtail/language/"
 "fa/)\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Language: fa\n"
 "Plural-Forms: nplurals=2; plural=(n > 1);\n"
+
+msgid "Type"
+msgstr "نوع"
+
+msgid "All"
+msgstr "همه"
 
 msgid "From site"
 msgstr "از سایت"
@@ -28,6 +36,10 @@ msgstr "همه سایت ها"
 
 msgid "A redirect with this path already exists."
 msgstr "ریدایرکتی با این مسیر وجود دارد."
+
+#, python-format
+msgid "Supported formats: %(supported_formats)s."
+msgstr "فورمت‌های پشتیبانی‌شده: %(supported_formats)s."
 
 msgid "redirect from"
 msgstr "ریدایرکت از"
@@ -50,6 +62,9 @@ msgstr "ریدایرکت به یک صفحه"
 
 msgid "redirect to any URL"
 msgstr "ریدایرکت به هر نشانی"
+
+msgid "created at"
+msgstr "ایجادشده در"
 
 msgid "temporary"
 msgstr "موقتی"
@@ -79,6 +94,15 @@ msgstr "آیا میخواهید این ریدایرکت را حذف کنید؟"
 msgid "Yes, delete"
 msgstr "بله حذف شود"
 
+msgid "Confirm"
+msgstr "تایید"
+
+msgid "Cancel"
+msgstr "انصراف"
+
+msgid "Preview"
+msgstr "پیش‌نمایش"
+
 #, python-format
 msgid "Editing %(title)s"
 msgstr "ویرایش %(title)s"
@@ -95,14 +119,20 @@ msgstr "از"
 msgid "To"
 msgstr "به"
 
+msgid "Continue"
+msgstr "ادامه"
+
 msgid "Site"
 msgstr "سایت"
 
-msgid "Type"
-msgstr "نوع"
-
 msgid "Edit this redirect"
 msgstr "ویرایش این ریدایرکت"
+
+#, python-format
+msgid "There is %(counter)s match"
+msgid_plural "There are %(counter)s matches"
+msgstr[0] "%(counter)s مورد همخوانی دارد"
+msgstr[1] "%(counter)s مورد همخوانی دارد"
 
 #, python-format
 msgid "Sorry, no redirects match \"<em>%(query_string)s</em>\""
@@ -110,17 +140,18 @@ msgstr "متاسفانه هیچ ریدایرکتی منطبق با «<em>%(query
 
 #, python-format
 msgid ""
-"No redirects have been created. Why not <a href="
-"\"%(wagtailredirects_add_redirect_url)s\">add one</a>?"
+"No redirects have been created. Why not <a "
+"href=\"%(wagtailredirects_add_redirect_url)s\">add one</a>?"
 msgstr ""
-"هیچ ریدایرکتی ایجاد نشده. می‌توانید یکی را <a href="
-"\"%(wagtailredirects_add_redirect_url)s\">ایجاد</a> کنید"
+"هیچ ریدایرکتی ایجاد نشده. می‌توانید یکی را <a "
+"href=\"%(wagtailredirects_add_redirect_url)s\">ایجاد</a> کنید"
 
 msgid "Search redirects"
 msgstr "ریدایرکت های جستجو"
 
-msgid "Redirect '{0}' updated."
-msgstr "ریدایرکت  '{0}' بروزرسانی شد."
+#, python-format
+msgid "Redirect '%(redirect_title)s' updated."
+msgstr "ریدایرکت  '%(redirect_title)s' بروزرسانی شد."
 
 msgid "Edit"
 msgstr "ویرایش"
@@ -128,11 +159,13 @@ msgstr "ویرایش"
 msgid "The redirect could not be saved due to errors."
 msgstr "ریدایرکت به دلیل بروز خطا ذخیره نشد."
 
-msgid "Redirect '{0}' deleted."
-msgstr "ریدایرکت '{0}' حذف شد."
+#, python-format
+msgid "Redirect '%(redirect_title)s' deleted."
+msgstr "ریدایرکت '%(redirect_title)s' حذف شد."
 
-msgid "Redirect '{0}' added."
-msgstr "ریدایرکت '{0}' افزوده شد."
+#, python-format
+msgid "Redirect '%(redirect_title)s' added."
+msgstr "ریدایرکت '%(redirect_title)s' افزوده شد."
 
 msgid "The redirect could not be created due to errors."
 msgstr "به دلیل بروز خطا ریدایرکتی ساخته نشد."

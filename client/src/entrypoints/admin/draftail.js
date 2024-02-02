@@ -1,6 +1,7 @@
 import * as Draftail from 'draftail';
 import draftail, {
   Link,
+  onPasteLink,
   Document,
   ImageBlock,
   EmbedBlock,
@@ -16,27 +17,28 @@ window.Draftail = Draftail;
 window.draftail = draftail;
 
 // Plugins for the built-in entities.
-const plugins = [
+const entityTypes = [
   {
     type: 'DOCUMENT',
-    source: draftail.ModalWorkflowSource,
+    source: draftail.DocumentModalWorkflowSource,
     decorator: Document,
   },
   {
     type: 'LINK',
-    source: draftail.ModalWorkflowSource,
+    source: draftail.LinkModalWorkflowSource,
     decorator: Link,
+    onPaste: onPasteLink,
   },
   {
     type: 'IMAGE',
-    source: draftail.ModalWorkflowSource,
+    source: draftail.ImageModalWorkflowSource,
     block: ImageBlock,
   },
   {
     type: 'EMBED',
-    source: draftail.ModalWorkflowSource,
+    source: draftail.EmbedModalWorkflowSource,
     block: EmbedBlock,
   },
 ];
 
-plugins.forEach(draftail.registerPlugin);
+entityTypes.forEach((type) => draftail.registerPlugin(type, 'entityTypes'));

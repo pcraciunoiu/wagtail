@@ -4,14 +4,16 @@
 #
 # Translators:
 # Adam Hughes <adamhughes31@gmail.com>, 2017
+# Philip Crisp, 2022
+# Philip Crisp, 2022
 msgid ""
 msgstr ""
 "Project-Id-Version: Wagtail\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2021-01-18 17:31+0000\n"
-"PO-Revision-Date: 2018-05-04 19:31+0000\n"
-"Last-Translator: Matt Westcott <matthew@torchbox.com>\n"
-"Language-Team: Welsh (http://www.transifex.com/torchbox/wagtail/language/"
+"POT-Creation-Date: 2023-10-19 23:14+0100\n"
+"PO-Revision-Date: 2014-02-19 21:18+0000\n"
+"Last-Translator: Philip Crisp, 2022\n"
+"Language-Team: Welsh (http://app.transifex.com/torchbox/wagtail/language/"
 "cy/)\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -20,11 +22,14 @@ msgstr ""
 "Plural-Forms: nplurals=4; plural=(n==1) ? 0 : (n==2) ? 1 : (n != 8 && n != "
 "11) ? 2 : 3;\n"
 
-msgid "No results found"
-msgstr "Dim chanfuwyd canlyniadau"
+msgid "Wagtail search"
+msgstr "Ymchwilio Wagtail"
 
-msgid "Date"
-msgstr "Dyddiad"
+msgid "Query Daily Hits"
+msgstr "Ymholiad Trawiadau Dyddiol"
 
-msgid "Choose from popular search terms"
-msgstr "Dewiswch o dermau chwilio poblogaidd"
+msgid "index entry"
+msgstr "cofnod mynegai"
+
+msgid "index entries"
+msgstr "cofnodion mynegai"

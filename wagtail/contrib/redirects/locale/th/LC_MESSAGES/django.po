@@ -8,10 +8,10 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Wagtail\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2021-01-18 17:30+0000\n"
-"PO-Revision-Date: 2020-07-24 16:51+0000\n"
-"Last-Translator: Matt Westcott <matthew@torchbox.com>\n"
-"Language-Team: Thai (http://www.transifex.com/torchbox/wagtail/language/"
+"POT-Creation-Date: 2023-10-19 23:14+0100\n"
+"PO-Revision-Date: 2014-02-20 21:04+0000\n"
+"Last-Translator: Walaksawan Vervoort <nula_wala@yahoo.com>, 2019\n"
+"Language-Team: Thai (http://app.transifex.com/torchbox/wagtail/language/"
 "th/)\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -22,6 +22,9 @@ msgstr ""
 msgid "Wagtail redirects"
 msgstr "การกำหนดทิศทางใหม่ของWagtail"
 
+msgid "Type"
+msgstr "แบบ,รูปแบบ"
+
 msgid "From site"
 msgstr "จากเว็บไซด์"
 
@@ -30,6 +33,10 @@ msgstr "ทุกเว็บไซด์"
 
 msgid "A redirect with this path already exists."
 msgstr "การกำหนดทิศทางใหม่นี้มีอยู่แล้ว"
+
+#, python-format
+msgid "Supported formats: %(supported_formats)s."
+msgstr "รูปที่สามารถใช้ได้: %(supported_formats)s."
 
 msgid "redirect from"
 msgstr "การกำหนดทิศทางใหม่จาก"
@@ -52,6 +59,9 @@ msgstr "การกำหนดหน้าใหม่"
 
 msgid "redirect to any URL"
 msgstr "การกำหนด URL อันไหนก็ได้"
+
+msgid "created at"
+msgstr "ถูกสร้างที่"
 
 msgid "temporary"
 msgstr "ชั่วคราว"
@@ -81,6 +91,9 @@ msgstr "คุณแน่ใจว่าคุณต้องการจะล
 msgid "Yes, delete"
 msgstr "ใช่,ลบทิ้ง"
 
+msgid "Preview"
+msgstr "ภาพตัวอย่าง"
+
 #, python-format
 msgid "Editing %(title)s"
 msgstr "กำลังแก้ไข %(title)s"
@@ -97,28 +110,14 @@ msgstr "จาก"
 msgid "To"
 msgstr "ถึง"
 
+msgid "Continue"
+msgstr "ต่อ,ต่อเนื่อง"
+
 msgid "Site"
 msgstr "เว็บไซด์"
 
-msgid "Type"
-msgstr "แบบ,รูปแบบ"
-
 msgid "Edit this redirect"
 msgstr "แก้ไขการกำหนดทิศทางนี้"
-
-#, python-format
-msgid ""
-"\n"
-"            There is %(counter)s match\n"
-"        "
-msgid_plural ""
-"\n"
-"            There are %(counter)s matches\n"
-"        "
-msgstr[0] ""
-"\n"
-" มี %(counter)s ที่ตรงกัน\n"
-" "
 
 #, python-format
 msgid "Sorry, no redirects match \"<em>%(query_string)s</em>\""
@@ -126,17 +125,18 @@ msgstr "ขออภัย,ไม่มีการเปลี่ยนทิ�
 
 #, python-format
 msgid ""
-"No redirects have been created. Why not <a href="
-"\"%(wagtailredirects_add_redirect_url)s\">add one</a>?"
+"No redirects have been created. Why not <a "
+"href=\"%(wagtailredirects_add_redirect_url)s\">add one</a>?"
 msgstr ""
-"ไม่มีการกำคุณไม่หนดทิศทางถูกสร้างขึ้น ทำไมคุณไม่<a href="
-"\"%(wagtailredirects_add_redirect_url)s\">เพิ่มหนึ่งอัน</a>?"
+"ไม่มีการกำคุณไม่หนดทิศทางถูกสร้างขึ้น ทำไมคุณไม่<a "
+"href=\"%(wagtailredirects_add_redirect_url)s\">เพิ่มหนึ่งอัน</a>?"
 
 msgid "Search redirects"
 msgstr "ค้นหาหลายการกำหนดทิศทาง"
 
-msgid "Redirect '{0}' updated."
-msgstr "การกำหนดทิศทาง'{0}'ถูกอัพเดทแล้ว"
+#, python-format
+msgid "Redirect '%(redirect_title)s' updated."
+msgstr "การกำหนดทิศทาง'%(redirect_title)s'ถูกอัพเดทแล้ว"
 
 msgid "Edit"
 msgstr "แก้ไข"
@@ -144,11 +144,13 @@ msgstr "แก้ไข"
 msgid "The redirect could not be saved due to errors."
 msgstr "การกำหนดทิศทางไม่สามารถเซฟได้ในขณะที่เกิดข้อผิดพลาด"
 
-msgid "Redirect '{0}' deleted."
-msgstr "การกำหนดทิศทาง'{0}'ถูกลบทิ้งแล้ว"
+#, python-format
+msgid "Redirect '%(redirect_title)s' deleted."
+msgstr "การกำหนดทิศทาง'%(redirect_title)s'ถูกลบทิ้งแล้ว"
 
-msgid "Redirect '{0}' added."
-msgstr "การกำหนดทิศทาง'{0}'ถูกเพิ่มแล้ว"
+#, python-format
+msgid "Redirect '%(redirect_title)s' added."
+msgstr "การกำหนดทิศทาง'%(redirect_title)s'ถูกเพิ่มแล้ว"
 
 msgid "The redirect could not be created due to errors."
 msgstr "การกำหนดทิศทางไม่สามารถถูกสร้างขึ้นได้ในขณะที่เกิดข้อผิดพลาด"

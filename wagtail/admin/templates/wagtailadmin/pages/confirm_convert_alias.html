@@ -1,14 +1,13 @@
 {% extends "wagtailadmin/base.html" %}
 {% load i18n wagtailadmin_tags %}
-{% block titletag %}{% blocktrans with title=page.get_admin_display_title %}Convert alias {{ title }}{% endblocktrans %}{% endblock %}
+{% block titletag %}{% blocktrans trimmed with title=page.get_admin_display_title %}Convert alias {{ title }}{% endblocktrans %}{% endblock %}
 
 {% block content %}
-    {% trans "Convert alias" as del_str %}
-    {% include "wagtailadmin/shared/header.html" with title=del_str subtitle=page.get_admin_display_title icon="doc-empty-inverse" %}
+    {% include "wagtailadmin/shared/header.html" with title=_("Convert alias") subtitle=page.get_admin_display_title icon="doc-empty-inverse" %}
 
     <div class="nice-padding">
         <p>
-            {% trans 'Are you sure you want to convert this alias into a regular page?' %}
+            {% trans 'Are you sure you want to convert this alias into an ordinary page?' %}
         </p>
 
         <p>

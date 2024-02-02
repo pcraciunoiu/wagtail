@@ -1,32 +1,29 @@
-{% extends "wagtailadmin/base.html" %}
+{% extends "wagtailadmin/generic/base.html" %}
 {% load wagtailadmin_tags %}
 {% load i18n %}
-
-{% block titletag %}{% blocktrans with page_type=content_type.model_class.get_verbose_name %}New {{ page_type }}{% endblocktrans %}{% endblock %}
-{% block bodyclass %}page-editor create model-{{ content_type.model }}{% endblock %}
+{% block bodyclass %}editor-view{% endblock %}
 
 {% block content %}
+    {% get_comments_enabled as comments_enabled %}
 
-    <header class="merged tab-merged">
-        {% explorer_breadcrumb parent_page include_self=1 %}
+    {% include 'wagtailadmin/shared/headers/page_create_header.html' with title=header_title %}
 
-        <div class="row">
-            <div class="left col9 header-title">
-                <h1>{% trans 'New' %} <span>{{ content_type.model_class.get_verbose_name }}</span></h1>
-            </div>
-        </div>
-
-        {% if locale %}
-        <ul class="row header-meta">
-            <li class="header-meta--locale">
-                {% include "wagtailadmin/shared/locale_selector.html" %}
-            </li>
-        </ul>
-        {% endif %}
-    </header>
-
-    <form id="page-edit-form" action="{% url 'wagtailadmin_pages:add' content_type.app_label content_type.model parent_page.id %}" method="POST" novalidate{% if form.is_multipart %} enctype="multipart/form-data"{% endif %}>
+    <form
+        id="page-edit-form"
+        action="{% url 'wagtailadmin_pages:add' content_type.app_label content_type.model parent_page.id %}"
+        method="POST"
+        novalidate
+        {% if form.is_multipart %}enctype="multipart/form-data"{% endif %}
+        data-edit-form
+        data-controller="w-init w-unsaved"
+        data-action="w-unsaved#submit beforeunload@window->w-unsaved#confirm change->w-unsaved#check keyup->w-unsaved#check"
+        data-w-init-event-value="{% if comments_enabled %}w-comments:init{% endif %}"
+        data-w-unsaved-confirmation-value="{{ _("This page has unsaved changes.") }}"
+        data-w-unsaved-force-value="{% if has_unsaved_changes %}true{% else %}false{% endif %}"
+        data-w-unsaved-watch-value="edits{% if comments_enabled %} comments{% endif %}"
+    >
         {% csrf_token %}
+
         <input type="hidden" name="next" value="{{ next }}">
 
         {% if parent_page.is_root %}
@@ -37,39 +34,13 @@
 
         {{ edit_handler.render_form_content }}
 
-        <footer>
-            <nav aria-label="{% trans 'Actions' %}">
-                <ul>
-                    <li class="actions actions--primary">
-                        <div class="dropdown dropup dropdown-button dropdown-button--white match-width {% if is_revision %}warning{% endif %}">
-                            {{ action_menu.render_html }}
-                        </div>
-                    </li>
-
-                    {% if preview_modes %}
-                        <li class="preview">
-                            {% trans 'Preview' as preview_label %}
-                            {% if preview_modes|length > 1 %}
-                                <div class="dropdown dropup dropdown-button match-width">
-                                    {% include "wagtailadmin/pages/_preview_button_on_create.html" with label=preview_label icon=1 %}
-                                    <div class="dropdown-toggle">{% icon name="arrow-up" %}</div>
-                                    <ul>
-                                        {% for mode_name, mode_display_name in preview_modes %}
-                                            <li>
-                                                {% include "wagtailadmin/pages/_preview_button_on_create.html" with mode=mode_name label=mode_display_name %}
-                                            </li>
-                                        {% endfor %}
-                                    </ul>
-                                </div>
-                            {% else %}
-                                {% include "wagtailadmin/pages/_preview_button_on_create.html" with label=preview_label icon=1 %}
-                            {% endif %}
-                        </li>
-                    {% endif %}
-                    {% block extra_footer_actions %}
-                    {% endblock %}
-                </ul>
+        <footer class="footer w-grid md:w-grid-flow-col">
+            <nav class="actions actions--primary footer__container" aria-label="{% trans 'Actions' %}">
+                {{ action_menu.render_html }}
+                {% block extra_footer_actions %}
+                {% endblock %}
             </nav>
+            {% include "wagtailadmin/pages/_unsaved_changes_warning.html" %}
         </footer>
     </form>
 
@@ -77,9 +48,7 @@
 
 {% block extra_css %}
     {{ block.super }}
-    {% include "wagtailadmin/pages/_editor_css.html" %}
-    {{ edit_handler.form.media.css }}
-    {{ action_menu.media.css }}
+    {{ media.css }}
 {% endblock %}
 
 {% block extra_js %}
@@ -89,30 +58,14 @@
     {% comment %}
         Additional js from widgets media. Allows for custom widgets in admin panel.
     {% endcomment %}
-    {{ edit_handler.form.media.js }}
-    {{ action_menu.media.js }}
-
-    {% comment %}
-        Additional HTML code that edit handlers define through 'html_declarations'. (Technically this isn't JavaScript, but it will generally be data that exists for JavaScript to work with...)
-    {% endcomment %}
-    {{ edit_handler.html_declarations }}
+    {{ media.js }}
 
     <script>
-        $(function(){
-            $('#page-edit-form .tab-content section.active input').first().trigger('focus');
-
-            /* Make user confirm before leaving the editor if there are unsaved changes */
-            {% trans "This page has unsaved changes." as confirmation_message %}
-            enableDirtyFormCheck(
-                '#page-edit-form',
-                {
-                    confirmationMessage: '{{ confirmation_message|escapejs }}',
-
-                    {% if has_unsaved_changes %}
-                        alwaysDirty: true,
-                    {% endif %}
-                }
-            );
-        });
+        // Set wagtailConfig.ACTIVE_CONTENT_LOCALE if this is a translated page
+        // This value may be used by JS widgets on the form
+        {% if locale %}
+            window.wagtailConfig = window.wagtailConfig || {};
+            window.wagtailConfig.ACTIVE_CONTENT_LOCALE = '{{ locale.language_code|escapejs }}';
+        {% endif %}
     </script>
 {% endblock %}

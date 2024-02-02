@@ -1,10 +1,14 @@
 import operator
 import re
-
 from functools import partial
 
-from .query import MATCH_NONE, Phrase, PlainText
+from django.apps import apps
+from django.db import connections
+from django.http import QueryDict
 
+from wagtail.search.index import RelatedFields, SearchField
+
+from .query import MATCH_NONE, Phrase, PlainText
 
 NOT_SET = object()
 
@@ -13,7 +17,7 @@ def balanced_reduce(operator, seq, initializer=NOT_SET):
     """
     Has the same result as Python's reduce function, but performs the calculations in a different order.
 
-    This is important when the operator is constructing data structures such as search query clases.
+    This is important when the operator is constructing data structures such as search query classes.
     This method will make the resulting data structures flatter, so operations that need to traverse
     them don't end up crashing with recursion errors.
 
@@ -68,26 +72,31 @@ MAX_QUERY_STRING_LENGTH = 255
 
 def normalise_query_string(query_string):
     # Truncate query string
-    if len(query_string) > MAX_QUERY_STRING_LENGTH:
-        query_string = query_string[:MAX_QUERY_STRING_LENGTH]
+    query_string = query_string[:MAX_QUERY_STRING_LENGTH]
     # Convert query_string to lowercase
     query_string = query_string.lower()
 
     # Remove leading, trailing and multiple spaces
-    query_string = re.sub(' +', ' ', query_string).strip()
+    query_string = re.sub(" +", " ", query_string).strip()
 
     return query_string
 
 
 def separate_filters_from_query(query_string):
-    filters_regexp = r'(\w+):(\w+|".+")'
+    filters_regexp = r'(\w+):(\w+|"[^"]+"|\'[^\']+\')'
 
-    filters = {}
+    filters = QueryDict(mutable=True)
     for match_object in re.finditer(filters_regexp, query_string):
         key, value = match_object.groups()
-        filters[key] = value.strip("\"")
+        filters.update(
+            {
+                key: value.strip('"')
+                if value.strip('"') is not value
+                else value.strip("'")
+            }
+        )
 
-    query_string = re.sub(filters_regexp, '', query_string).strip()
+    query_string = re.sub(filters_regexp, "", query_string).strip()
 
     return filters, query_string
 
@@ -110,19 +119,26 @@ def parse_query_string(query_string, operator=None, zero_terms=MATCH_NONE):
 
     is_phrase = False
     tokens = []
-    for part in query_string.split('"'):
+    if '"' in query_string:
+        parts = query_string.split('"')
+    else:
+        parts = query_string.split("'")
+
+    for part in parts:
         part = part.strip()
 
         if part:
             if is_phrase:
                 tokens.append(Phrase(part))
             else:
-                tokens.append(PlainText(part, operator=operator or PlainText.DEFAULT_OPERATOR))
+                tokens.append(
+                    PlainText(part, operator=operator or PlainText.DEFAULT_OPERATOR)
+                )
 
         is_phrase = not is_phrase
 
     if tokens:
-        if operator == 'or':
+        if operator == "or":
             search_query = OR(tokens)
         else:
             search_query = AND(tokens)
@@ -130,3 +146,67 @@ def parse_query_string(query_string, operator=None, zero_terms=MATCH_NONE):
         search_query = zero_terms
 
     return filters, search_query
+
+
+def get_descendant_models(model):
+    """
+    Returns all descendants of a model, including the model itself.
+    """
+    descendant_models = {
+        other_model
+        for other_model in apps.get_models()
+        if issubclass(other_model, model)
+    }
+    descendant_models.add(model)
+    return descendant_models
+
+
+def get_content_type_pk(model):
+    # We import it locally because this file is loaded before apps are ready.
+    from django.contrib.contenttypes.models import ContentType
+
+    return ContentType.objects.get_for_model(model).pk
+
+
+def get_ancestors_content_types_pks(model):
+    """
+    Returns content types ids for the ancestors of this model, excluding it.
+    """
+    from django.contrib.contenttypes.models import ContentType
+
+    return [
+        ct.pk
+        for ct in ContentType.objects.get_for_models(
+            *model._meta.get_parent_list()
+        ).values()
+    ]
+
+
+def get_descendants_content_types_pks(model):
+    """
+    Returns content types ids for the descendants of this model, including it.
+    """
+    from django.contrib.contenttypes.models import ContentType
+
+    return [
+        ct.pk
+        for ct in ContentType.objects.get_for_models(
+            *get_descendant_models(model)
+        ).values()
+    ]
+
+
+def get_search_fields(search_fields):
+    for search_field in search_fields:
+        if isinstance(search_field, SearchField):
+            yield search_field
+        elif isinstance(search_field, RelatedFields):
+            yield from get_search_fields(search_field.fields)
+
+
+def get_postgresql_connections():
+    return [
+        connection
+        for connection in connections.all()
+        if connection.vendor == "postgresql"
+    ]

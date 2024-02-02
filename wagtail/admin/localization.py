@@ -1,50 +1,47 @@
 import pytz
-
 from django.conf import settings
 from django.utils.dates import MONTHS, WEEKDAYS, WEEKDAYS_ABBR
 from django.utils.translation import gettext as _
-from django.utils.translation import gettext_lazy
-
 
 # Wagtail languages with >=90% coverage
 # This list is manually maintained
 WAGTAILADMIN_PROVIDED_LANGUAGES = [
-    ('ar', gettext_lazy('Arabic')),
-    ('ca', gettext_lazy('Catalan')),
-    ('cs', gettext_lazy('Czech')),
-    ('de', gettext_lazy('German')),
-    ('el', gettext_lazy('Greek')),
-    ('en', gettext_lazy('English')),
-    ('es', gettext_lazy('Spanish')),
-    ('et', gettext_lazy('Estonian')),
-    ('fi', gettext_lazy('Finnish')),
-    ('fr', gettext_lazy('French')),
-    ('gl', gettext_lazy('Galician')),
-    ('hr', gettext_lazy('Croatian')),
-    ('hu', gettext_lazy('Hungarian')),
-    ('id-id', gettext_lazy('Indonesian')),
-    ('is-is', gettext_lazy('Icelandic')),
-    ('it', gettext_lazy('Italian')),
-    ('ja', gettext_lazy('Japanese')),
-    ('ko', gettext_lazy('Korean')),
-    ('lt', gettext_lazy('Lithuanian')),
-    ('mn', gettext_lazy('Mongolian')),
-    ('nb', gettext_lazy('Norwegian Bokmål')),
-    ('nl-nl', gettext_lazy('Netherlands Dutch')),
-    ('fa', gettext_lazy('Persian')),
-    ('pl', gettext_lazy('Polish')),
-    ('pt-br', gettext_lazy('Brazilian Portuguese')),
-    ('pt-pt', gettext_lazy('Portuguese')),
-    ('ro', gettext_lazy('Romanian')),
-    ('ru', gettext_lazy('Russian')),
-    ('sv', gettext_lazy('Swedish')),
-    ('sk-sk', gettext_lazy('Slovak')),
-    ('th', gettext_lazy('Thai')),
-    ('tr', gettext_lazy('Turkish')),
-    ('tr-tr', gettext_lazy('Turkish (Turkey)')),
-    ('uk', gettext_lazy('Ukrainian')),
-    ('zh-hans', gettext_lazy('Chinese (Simplified)')),
-    ('zh-hant', gettext_lazy('Chinese (Traditional)')),
+    ("ar", "Arabic"),
+    ("ca", "Catalan"),
+    ("cs", "Czech"),
+    ("de", "German"),
+    ("el", "Greek"),
+    ("en", "English"),
+    ("es", "Spanish"),
+    ("et", "Estonian"),
+    ("fi", "Finnish"),
+    ("fr", "French"),
+    ("gl", "Galician"),
+    ("hr", "Croatian"),
+    ("hu", "Hungarian"),
+    ("id-id", "Indonesian"),
+    ("is-is", "Icelandic"),
+    ("it", "Italian"),
+    ("ja", "Japanese"),
+    ("ko", "Korean"),
+    ("lt", "Lithuanian"),
+    ("mn", "Mongolian"),
+    ("nb", "Norwegian Bokmål"),
+    ("nl", "Dutch"),
+    ("fa", "Persian"),
+    ("pl", "Polish"),
+    ("pt-br", "Brazilian Portuguese"),
+    ("pt-pt", "Portuguese"),
+    ("ro", "Romanian"),
+    ("ru", "Russian"),
+    ("sv", "Swedish"),
+    ("sk-sk", "Slovak"),
+    ("sl", "Slovenian"),
+    ("th", "Thai"),
+    ("tr", "Turkish"),
+    ("uk", "Ukrainian"),
+    ("zh-hans", "Chinese (Simplified)"),
+    ("zh-hant", "Chinese (Traditional)"),
 ]
 
 
@@ -52,46 +49,61 @@ WAGTAILADMIN_PROVIDED_LANGUAGES = [
 # as the wagtailConfig.STRINGS object
 def get_js_translation_strings():
     return {
-        'DELETE': _('Delete'),
-        'EDIT': _('Edit'),
-        'PAGE': _('Page'),
-        'PAGES': _('Pages'),
-        'LOADING': _('Loading…'),
-        'NO_RESULTS': _('No results'),
-        'SERVER_ERROR': _('Server Error'),
-        'SEE_ALL': _('See all'),
-        'CLOSE_EXPLORER': _('Close explorer'),
-        'ALT_TEXT': _('Alt text'),
-        'DECORATIVE_IMAGE': _('Decorative image'),
-        'WRITE_HERE': _('Write here…'),
-        'HORIZONTAL_LINE': _('Horizontal line'),
-        'LINE_BREAK': _('Line break'),
-        'UNDO': _('Undo'),
-        'REDO': _('Redo'),
-        'RELOAD_PAGE': _('Reload the page'),
-        'RELOAD_EDITOR': _('Reload saved content'),
-        'SHOW_LATEST_CONTENT': _('Show latest content'),
-        'SHOW_ERROR': _('Show error'),
-        'EDITOR_CRASH': _('The editor just crashed. Content has been reset to the last saved version.'),
-        'BROKEN_LINK': _('Broken link'),
-        'MISSING_DOCUMENT': _('Missing document'),
-        'CLOSE': _('Close'),
-        'EDIT_PAGE': _('Edit \'{title}\''),
-        'VIEW_CHILD_PAGES_OF_PAGE': _('View child pages of \'{title}\''),
-        'PAGE_EXPLORER': _('Page explorer'),
-
-        'MONTHS': [str(m) for m in MONTHS.values()],
-
+        "MONTHS": [str(m) for m in MONTHS.values()],
         # Django's WEEKDAYS list begins on Monday, but ours should start on Sunday, so start
         # counting from -1 and use modulo 7 to get an array index
-        'WEEKDAYS': [str(WEEKDAYS[d % 7]) for d in range(-1, 6)],
-        'WEEKDAYS_SHORT': [str(WEEKDAYS_ABBR[d % 7]) for d in range(-1, 6)],
+        "WEEKDAYS": [str(WEEKDAYS[d % 7]) for d in range(-1, 6)],
+        "WEEKDAYS_SHORT": [str(WEEKDAYS_ABBR[d % 7]) for d in range(-1, 6)],
+        # used by bulk actions
+        "BULK_ACTIONS": {
+            "PAGE": {
+                "SINGULAR": _("1 page selected"),
+                "PLURAL": _("%(objects)s pages selected"),
+                "ALL": _("All %(objects)s pages on this screen selected"),
+                "ALL_IN_LISTING": _("All pages in listing selected"),
+            },
+            "DOCUMENT": {
+                "SINGULAR": _("1 document selected"),
+                "PLURAL": _("%(objects)s documents selected"),
+                "ALL": _("All %(objects)s documents on this screen selected"),
+                "ALL_IN_LISTING": _("All documents in listing selected"),
+            },
+            "IMAGE": {
+                "SINGULAR": _("1 image selected"),
+                "PLURAL": _("%(objects)s images selected"),
+                "ALL": _("All %(objects)s images on this screen selected"),
+                "ALL_IN_LISTING": _("All images in listing selected"),
+            },
+            "USER": {
+                "SINGULAR": _("1 user selected"),
+                "PLURAL": _("%(objects)s users selected"),
+                "ALL": _("All %(objects)s users on this screen selected"),
+                "ALL_IN_LISTING": _("All users in listing selected"),
+            },
+            "SNIPPET": {
+                "SINGULAR": _("1 snippet selected"),
+                "PLURAL": _("%(objects)s snippets selected"),
+                "ALL": _("All %(objects)s snippets on this screen selected"),
+                "ALL_IN_LISTING": _("All snippets in listing selected"),
+            },
+            "ITEM": {
+                "SINGULAR": _("1 item selected"),
+                "PLURAL": _("%(objects)s items selected"),
+                "ALL": _("All %(objects)s items on this screen selected"),
+                "ALL_IN_LISTING": _("All items in listing selected"),
+            },
+        },
     }
 
 
 def get_available_admin_languages():
-    return getattr(settings, 'WAGTAILADMIN_PERMITTED_LANGUAGES', WAGTAILADMIN_PROVIDED_LANGUAGES)
+    return getattr(
+        settings, "WAGTAILADMIN_PERMITTED_LANGUAGES", WAGTAILADMIN_PROVIDED_LANGUAGES
+    )
 
 
 def get_available_admin_time_zones():
-    return getattr(settings, 'WAGTAIL_USER_TIME_ZONES', pytz.common_timezones)
+    if not settings.USE_TZ:
+        return []
+
+    return getattr(settings, "WAGTAIL_USER_TIME_ZONES", pytz.common_timezones)

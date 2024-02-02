@@ -1,127 +1,61 @@
 import $ from 'jquery';
+import { initTabs } from '../../includes/tabs';
+import { submitCreationForm } from '../../includes/chooserModal';
+
+const ajaxifyTaskCreateTab = (modal) => {
+  $(
+    '#tab-new a.task-type-choice, #tab-new a.choose-different-task-type',
+    modal.body,
+  ).on('click', function onClickNew() {
+    modal.loadUrl(this.href);
+    return false;
+  });
+
+  // eslint-disable-next-line func-names
+  $('form.task-create', modal.body).on('submit', function () {
+    submitCreationForm(modal, this, { errorContainerSelector: '#tab-new' });
+
+    return false;
+  });
+};
 
 const TASK_CHOOSER_MODAL_ONLOAD_HANDLERS = {
   chooser(modal, jsonData) {
-    function ajaxifyLinks(context) {
-      $('a.task-type-choice, a.choose-different-task-type, a.task-choice', context)
-        // eslint-disable-next-line func-names
-        .on('click', function () {
-          modal.loadUrl(this.href);
-          return false;
-        });
+    const form = $('form.task-search', modal.body)[0];
 
-      // eslint-disable-next-line func-names
-      $('.pagination a', context).on('click', function () {
-        const page = this.getAttribute('data-page');
-        // eslint-disable-next-line @typescript-eslint/no-use-before-define
-        setPage(page);
+    function ajaxifyLinks(context) {
+      $('a.task-choice', context).on('click', function handleClick() {
+        modal.loadUrl(this.href);
         return false;
       });
 
-      $('a.create-one-now').on('click', (e) => {
-        // Select upload form tab
-        $('a[href="#new"]').tab('show');
-        e.preventDefault();
+      $('.pagination a', context).on('click', function handleClick() {
+        const url = this.href;
+        form.dispatchEvent(new CustomEvent('navigate', { detail: { url } }));
+        return false;
       });
-    }
 
-    const searchUrl = $('form.task-search', modal.body).attr('action');
-    let request;
-    function search() {
-      request = $.ajax({
-        url: searchUrl,
-        data: {
-          // eslint-disable-next-line id-length
-          q: $('#id_q').val(),
-          task_type: $('#id_task_type').val(),
-        },
-        success(data) {
-          request = null;
-          $('#search-results').html(data);
-          ajaxifyLinks($('#search-results'));
-        },
-        error() {
-          request = null;
-        }
-      });
-      return false;
-    }
-    function setPage(page) {
-      let dataObj;
+      // Reinitialize tabs to hook up tab event listeners in the modal
+      initTabs();
 
-      if ($('#id_q').val().length) {
-        // eslint-disable-next-line id-length
-        dataObj = { q: $('#id_q').val(), p: page };
-      } else {
-        // eslint-disable-next-line id-length
-        dataObj = { p: page };
-      }
-
-      request = $.ajax({
-        url: searchUrl,
-        data: dataObj,
-        success(data) {
-          request = null;
-          $('#search-results').html(data);
-          ajaxifyLinks($('#search-results'));
-        },
-        error() {
-          request = null;
-        }
-      });
-      return false;
+      // set up success handling when new results are returned for next search
+      modal.body[0].addEventListener(
+        'w-swap:success',
+        ({ srcElement }) => ajaxifyLinks($(srcElement)),
+        { once: true },
+      );
     }
 
     ajaxifyLinks(modal.body);
-
-    // eslint-disable-next-line func-names
-    $('form.task-create', modal.body).on('submit', function () {
-      const formdata = new FormData(this);
-
-      $.ajax({
-        url: this.action,
-        data: formdata,
-        processData: false,
-        contentType: false,
-        type: 'POST',
-        dataType: 'text',
-        success: modal.loadResponseText,
-        error(response, textStatus, errorThrown) {
-          const message = jsonData.error_message + '<br />' + errorThrown + ' - ' + response.status;
-          $('#new').append(
-            '<div class="help-block help-critical">' +
-            '<strong>' + jsonData.error_label + ': </strong>' + message + '</div>');
-        }
-      });
-
-      return false;
-    });
-
-    $('form.task-search', modal.body).on('submit', search);
-
-    // eslint-disable-next-line func-names
-    $('#id_q').on('input', function () {
-      if (request) {
-        request.abort();
-      }
-      clearTimeout($.data(this, 'timer'));
-      const wait = setTimeout(search, 50);
-      $(this).data('timer', wait);
-    });
-
-    // eslint-disable-next-line func-names
-    $('#id_task_type').on('change', function () {
-      if (request) {
-        request.abort();
-      }
-      clearTimeout($.data(this, 'timer'));
-      const wait = setTimeout(search, 50);
-      $(this).data('timer', wait);
-    });
+    ajaxifyTaskCreateTab(modal, jsonData);
   },
   task_chosen(modal, jsonData) {
     modal.respond('taskChosen', jsonData.result);
     modal.close();
-  }
+  },
+  reshow_create_tab(modal, jsonData) {
+    $('#tab-new', modal.body).html(jsonData.htmlFragment);
+    ajaxifyTaskCreateTab(modal, jsonData);
+  },
 };
 window.TASK_CHOOSER_MODAL_ONLOAD_HANDLERS = TASK_CHOOSER_MODAL_ONLOAD_HANDLERS;

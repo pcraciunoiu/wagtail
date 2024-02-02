@@ -1,10 +1,21 @@
 import React from 'react';
 import { shallow } from 'enzyme';
 
-import ModalWorkflowSource, { getChooserConfig, filterEntityData } from './ModalWorkflowSource';
-import * as DraftUtils from '../DraftUtils';
 import { DraftUtils as DraftailUtils } from 'draftail';
-import { EditorState, convertFromRaw, AtomicBlockUtils, RichUtils, Modifier } from 'draft-js';
+import {
+  EditorState,
+  convertFromRaw,
+  AtomicBlockUtils,
+  RichUtils,
+  Modifier,
+} from 'draft-js';
+import {
+  ImageModalWorkflowSource,
+  EmbedModalWorkflowSource,
+  LinkModalWorkflowSource,
+  DocumentModalWorkflowSource,
+} from './ModalWorkflowSource';
+import * as DraftUtils from '../DraftUtils';
 
 global.ModalWorkflow = () => {};
 
@@ -19,40 +30,46 @@ describe('ModalWorkflowSource', () => {
   });
 
   it('works', () => {
-    expect(shallow((
-      <ModalWorkflowSource
-        editorState={{}}
-        entityType={{}}
-        entity={{}}
-        onComplete={() => {}}
-        onClose={() => {}}
-      />
-    ))).toMatchSnapshot();
+    expect(
+      shallow(
+        <ImageModalWorkflowSource
+          editorState={{}}
+          entityType={{}}
+          entity={null}
+          onComplete={() => {}}
+          onClose={() => {}}
+        />,
+      ),
+    ).toMatchSnapshot();
   });
 
   describe('#getChooserConfig', () => {
+    const imageSource = new ImageModalWorkflowSource();
     it('IMAGE without entity', () => {
-      expect(getChooserConfig({ type: 'IMAGE' }, null, '')).toEqual({
+      expect(imageSource.getChooserConfig(null, '')).toEqual({
         url: '/admin/images/chooser/?select_format=true',
         urlParams: {},
+        responses: { chosen: imageSource.onChosen },
         onload: global.IMAGE_CHOOSER_MODAL_ONLOAD_HANDLERS,
       });
     });
 
     it('IMAGE with entity', () => {
       const entity = { getData: () => ({ id: 1, format: 'left', alt: 'alt' }) };
-      expect(getChooserConfig({ type: 'IMAGE' }, entity, '')).toEqual({
+      expect(imageSource.getChooserConfig(entity, '')).toEqual({
         url: '/admin/images/chooser/1/select_format/',
         urlParams: {
           format: 'left',
           alt_text: 'alt',
         },
+        responses: { chosen: imageSource.onChosen },
         onload: global.IMAGE_CHOOSER_MODAL_ONLOAD_HANDLERS,
       });
     });
 
+    const embedSource = new EmbedModalWorkflowSource();
     it('EMBED without entity', () => {
-      expect(getChooserConfig({ type: 'EMBED' }, null, '')).toEqual({
+      expect(embedSource.getChooserConfig(null, '')).toMatchObject({
         url: '/admin/embeds/chooser/',
         urlParams: {},
         onload: global.EMBED_CHOOSER_MODAL_ONLOAD_HANDLERS,
@@ -61,139 +78,176 @@ describe('ModalWorkflowSource', () => {
 
     it('EMBED with entity', () => {
       const entity = { getData: () => ({ url: 'http://example.org/content' }) };
-      expect(getChooserConfig({ type: 'EMBED' }, entity, '')).toEqual({
+      expect(embedSource.getChooserConfig(entity, '')).toMatchObject({
         url: '/admin/embeds/chooser/',
         urlParams: { url: 'http://example.org/content' },
         onload: global.EMBED_CHOOSER_MODAL_ONLOAD_HANDLERS,
       });
     });
 
+    const documentSource = new DocumentModalWorkflowSource();
     it('DOCUMENT', () => {
-      expect(getChooserConfig({ type: 'DOCUMENT' }, null, '')).toEqual({
+      expect(documentSource.getChooserConfig(null, '')).toEqual({
         url: '/admin/documents/chooser/',
         urlParams: {},
+        responses: { chosen: documentSource.onChosen },
         onload: global.DOCUMENT_CHOOSER_MODAL_ONLOAD_HANDLERS,
       });
     });
 
+    const linkSource = new LinkModalWorkflowSource();
     describe('LINK', () => {
       it('no entity', () => {
-        expect(getChooserConfig({ type: 'LINK' }, null, '')).toMatchSnapshot();
+        expect(linkSource.getChooserConfig(null, '')).toMatchSnapshot();
       });
 
       it('page', () => {
-        expect(getChooserConfig({ type: 'LINK' }, {
-          getData: () => ({ id: 2, parentId: 1 })
-        }, '')).toMatchSnapshot();
+        expect(
+          linkSource.getChooserConfig(
+            {
+              getData: () => ({ id: 2, parentId: 1 }),
+            },
+            '',
+          ),
+        ).toMatchSnapshot();
       });
 
       it('root page', () => {
-        expect(getChooserConfig({ type: 'LINK' }, {
-          getData: () => ({ id: 1, parentId: null })
-        }, '')).toMatchSnapshot();
+        expect(
+          linkSource.getChooserConfig(
+            {
+              getData: () => ({ id: 1, parentId: null }),
+            },
+            '',
+          ),
+        ).toMatchSnapshot();
       });
 
       it('mail', () => {
-        expect(getChooserConfig({ type: 'LINK' }, {
-          getData: () => ({ url: 'mailto:test@example.com' })
-        }, '')).toMatchSnapshot();
+        expect(
+          linkSource.getChooserConfig(
+            {
+              getData: () => ({ url: 'mailto:test@example.com' }),
+            },
+            '',
+          ),
+        ).toMatchSnapshot();
       });
 
       it('external', () => {
-        expect(getChooserConfig({ type: 'LINK' }, {
-          getData: () => ({ url: 'https://www.example.com/' })
-        }, '')).toMatchSnapshot();
+        expect(
+          linkSource.getChooserConfig(
+            {
+              getData: () => ({ url: 'https://www.example.com/' }),
+            },
+            '',
+          ),
+        ).toMatchSnapshot();
       });
     });
   });
 
   describe('#filterEntityData', () => {
+    const imageSource = new ImageModalWorkflowSource();
     it('IMAGE', () => {
-      expect(filterEntityData({ type: 'IMAGE' }, {
-        id: 53,
-        title: 'Test',
-        alt: 'Test',
-        class: 'richtext-image right',
-        edit_link: '/admin/images/53/',
-        format: 'right',
-        preview: {
-          url: '/media/images/test.width-500.jpg',
-        }
-      })).toMatchSnapshot();
+      expect(
+        imageSource.filterEntityData({
+          id: 53,
+          title: 'Test',
+          alt: 'Test',
+          class: 'richtext-image right',
+          edit_url: '/admin/images/53/',
+          format: 'right',
+          preview: {
+            url: '/media/images/test.width-500.jpg',
+          },
+        }),
+      ).toMatchSnapshot();
     });
 
+    const embedSource = new EmbedModalWorkflowSource();
     it('EMBED', () => {
-      expect(filterEntityData({ type: 'EMBED' }, {
-        authorName: 'Test',
-        embedType: 'video',
-        providerName: 'YouTube',
-        thumbnail: 'https://i.ytimg.com/vi/pSlVtxLOYiM/hqdefault.jpg',
-        title: 'Test',
-        url: 'https://www.youtube.com/watch?v=pSlVtxLOYiM',
-      })).toMatchSnapshot();
+      expect(
+        embedSource.filterEntityData({
+          authorName: 'Test',
+          embedType: 'video',
+          providerName: 'YouTube',
+          thumbnail: 'https://i.ytimg.com/vi/pSlVtxLOYiM/hqdefault.jpg',
+          title: 'Test',
+          url: 'https://www.youtube.com/watch?v=pSlVtxLOYiM',
+        }),
+      ).toMatchSnapshot();
     });
 
+    const documentSource = new DocumentModalWorkflowSource();
     it('DOCUMENT', () => {
-      expect(filterEntityData({ type: 'DOCUMENT' }, {
-        edit_link: '/admin/documents/edit/1/',
-        filename: 'test.pdf',
-        id: 1,
-        title: 'Test',
-        url: '/documents/1/test.pdf',
-      })).toMatchSnapshot();
+      expect(
+        documentSource.filterEntityData({
+          edit_url: '/admin/documents/edit/1/',
+          filename: 'test.pdf',
+          id: 1,
+          title: 'Test',
+          url: '/documents/1/test.pdf',
+        }),
+      ).toMatchSnapshot();
     });
 
-    it('OTHER', () => {
-      expect(filterEntityData({ type: 'OTHER' }, {})).toEqual({});
-    });
-
+    const linkSource = new LinkModalWorkflowSource();
     describe('LINK', () => {
       it('page', () => {
-        expect(filterEntityData({ type: 'LINK' }, {
-          id: 60,
-          parentId: 1,
-          url: '/',
-          editUrl: '/admin/pages/60/edit/',
-          title: 'Welcome to the Wagtail Bakery!',
-        })).toMatchSnapshot();
+        expect(
+          linkSource.filterEntityData({
+            id: 60,
+            parentId: 1,
+            url: '/',
+            editUrl: '/admin/pages/60/edit/',
+            title: 'Welcome to the Wagtail Bakery!',
+          }),
+        ).toMatchSnapshot();
       });
 
       it('mail', () => {
-        expect(filterEntityData({ type: 'LINK' }, {
-          prefer_this_title_as_link_text: false,
-          title: 'test@example.com',
-          url: 'mailto:test@example.com',
-        })).toMatchSnapshot();
+        expect(
+          linkSource.filterEntityData({
+            prefer_this_title_as_link_text: false,
+            title: 'test@example.com',
+            url: 'mailto:test@example.com',
+          }),
+        ).toMatchSnapshot();
       });
 
       it('anchor', () => {
-        expect(filterEntityData({ type: 'LINK' }, {
-          prefer_this_title_as_link_text: false,
-          title: 'testanchor',
-          url: '#testanchor',
-        })).toMatchSnapshot();
+        expect(
+          linkSource.filterEntityData({
+            prefer_this_title_as_link_text: false,
+            title: 'testanchor',
+            url: '#testanchor',
+          }),
+        ).toMatchSnapshot();
       });
 
       it('external', () => {
-        expect(filterEntityData({ type: 'LINK' }, {
-          prefer_this_title_as_link_text: false,
-          title: 'https://www.example.com/',
-          url: 'https://www.example.com/',
-        })).toMatchSnapshot();
+        expect(
+          linkSource.filterEntityData({
+            prefer_this_title_as_link_text: false,
+            title: 'https://www.example.com/',
+            url: 'https://www.example.com/',
+          }),
+        ).toMatchSnapshot();
       });
     });
   });
 
   it('#componentDidMount', () => {
-    const wrapper = shallow((
-      <ModalWorkflowSource
+    const wrapper = shallow(
+      <EmbedModalWorkflowSource
         editorState={EditorState.createEmpty()}
         entityType={{}}
-        entity={{}}
+        entity={null}
         onComplete={() => {}}
         onClose={() => {}}
-      />
-    ));
+      />,
+    );
 
     wrapper.instance().onChosen = jest.fn();
 
@@ -210,15 +264,15 @@ describe('ModalWorkflowSource', () => {
     window.alert = jest.fn();
     const onClose = jest.fn();
 
-    const wrapper = shallow((
-      <ModalWorkflowSource
+    const wrapper = shallow(
+      <EmbedModalWorkflowSource
         editorState={EditorState.createEmpty()}
         entityType={{}}
-        entity={{}}
+        entity={null}
         onComplete={() => {}}
         onClose={onClose}
-      />
-    ));
+      />,
+    );
 
     wrapper.instance().componentDidMount();
 
@@ -231,15 +285,15 @@ describe('ModalWorkflowSource', () => {
   });
 
   it('#componentWillUnmount', () => {
-    const wrapper = shallow((
-      <ModalWorkflowSource
+    const wrapper = shallow(
+      <EmbedModalWorkflowSource
         editorState={EditorState.createEmpty()}
         entityType={{}}
-        entity={{}}
+        entity={null}
         onComplete={() => {}}
         onClose={() => {}}
-      />
-    ));
+      />,
+    );
 
     wrapper.instance().componentWillUnmount();
 
@@ -253,29 +307,31 @@ describe('ModalWorkflowSource', () => {
       const onComplete = jest.fn();
       const close = jest.fn();
 
-      let editorState = EditorState.createWithContent(convertFromRaw({
-        entityMap: {},
-        blocks: [
-          {
-            key: 'a',
-            text: 'test',
-          }
-        ]
-      }));
+      let editorState = EditorState.createWithContent(
+        convertFromRaw({
+          entityMap: {},
+          blocks: [
+            {
+              key: 'a',
+              text: 'test',
+            },
+          ],
+        }),
+      );
       let selection = editorState.getSelection();
       selection = selection.merge({
         focusOffset: 4,
       });
       editorState = EditorState.acceptSelection(editorState, selection);
-      const wrapper = shallow((
-        <ModalWorkflowSource
+      const wrapper = shallow(
+        <LinkModalWorkflowSource
           editorState={editorState}
           entityType={{}}
-          entity={{}}
+          entity={null}
           onComplete={onComplete}
           onClose={() => {}}
-        />
-      ));
+        />,
+      );
 
       wrapper.instance().workflow = { close };
       wrapper.instance().onChosen({});
@@ -293,31 +349,33 @@ describe('ModalWorkflowSource', () => {
       const onComplete = jest.fn();
       const close = jest.fn();
 
-      let editorState = EditorState.createWithContent(convertFromRaw({
-        entityMap: {},
-        blocks: [
-          {
-            key: 'a',
-            text: 'test',
-          }
-        ]
-      }));
+      let editorState = EditorState.createWithContent(
+        convertFromRaw({
+          entityMap: {},
+          blocks: [
+            {
+              key: 'a',
+              text: 'test',
+            },
+          ],
+        }),
+      );
       let selection = editorState.getSelection();
       selection = selection.merge({
         focusOffset: 4,
       });
       editorState = EditorState.acceptSelection(editorState, selection);
-      const wrapper = shallow((
-        <ModalWorkflowSource
+      const wrapper = shallow(
+        <LinkModalWorkflowSource
           editorState={editorState}
           entityType={{
             block: () => {},
           }}
-          entity={{}}
+          entity={null}
           onComplete={onComplete}
           onClose={() => {}}
-        />
-      ));
+        />,
+      );
 
       wrapper.instance().workflow = { close };
       wrapper.instance().onChosen({});
@@ -333,45 +391,53 @@ describe('ModalWorkflowSource', () => {
       jest.spyOn(DraftailUtils, 'updateBlockEntity');
       const onComplete = jest.fn();
       const close = jest.fn();
+      const entity = { getData: () => ({ id: 1, format: 'left', alt: 'alt' }) };
 
-      let editorState = EditorState.createWithContent(convertFromRaw({
-        blocks: [
-          {
-            key: 'a',
-            text: ' ',
-            type: 'atomic',
-            entityRanges: [{ offset: 0, length: 1, key: 'first' }],
-            data: {},
-          }
-        ],
-        entityMap: {
-          first: {
-            type: 'IMAGE',
-            mutability: 'IMMUTABLE',
-            data: {},
-          }
-        }
-      }));
+      let editorState = EditorState.createWithContent(
+        convertFromRaw({
+          blocks: [
+            {
+              key: 'a',
+              text: ' ',
+              type: 'atomic',
+              entityRanges: [{ offset: 0, length: 1, key: 'first' }],
+              data: {},
+            },
+          ],
+          entityMap: {
+            first: {
+              type: 'IMAGE',
+              mutability: 'IMMUTABLE',
+              data: {},
+            },
+          },
+        }),
+      );
       let selection = editorState.getSelection();
       selection = selection.merge({
         anchorKey: 'a',
       });
       editorState = EditorState.acceptSelection(editorState, selection);
-      const wrapper = shallow((
-        <ModalWorkflowSource
+      const wrapper = shallow(
+        <ImageModalWorkflowSource
           editorState={editorState}
           entityType={{
             block: () => {},
           }}
-          entity={{}}
-          entityKey={'first'}
+          entity={entity}
+          entityKey="first"
           onComplete={onComplete}
           onClose={() => {}}
-        />
-      ));
+        />,
+      );
 
       wrapper.instance().workflow = { close };
-      wrapper.instance().onChosen({});
+      wrapper.instance().onChosen({
+        id: 2,
+        preview: { url: '/foo' },
+        alt: 'new image',
+        format: 'left',
+      });
 
       expect(onComplete).toHaveBeenCalled();
       expect(DraftailUtils.updateBlockEntity).toHaveBeenCalled();
@@ -386,28 +452,30 @@ describe('ModalWorkflowSource', () => {
       const onComplete = jest.fn();
       const close = jest.fn();
 
-      let editorState = EditorState.createWithContent(convertFromRaw({
-        entityMap: {},
-        blocks: [
-          {
-            key: 'a',
-            text: 'test',
-          }
-        ]
-      }));
+      let editorState = EditorState.createWithContent(
+        convertFromRaw({
+          entityMap: {},
+          blocks: [
+            {
+              key: 'a',
+              text: 'test',
+            },
+          ],
+        }),
+      );
       let selection = editorState.getSelection();
       selection = selection.merge({
         focusOffset: 4,
       });
       editorState = EditorState.acceptSelection(editorState, selection);
-      const wrapper = shallow((
-        <ModalWorkflowSource
+      const wrapper = shallow(
+        <LinkModalWorkflowSource
           editorState={editorState}
           entityType={{}}
           onComplete={onComplete}
           onClose={() => {}}
-        />
-      ));
+        />,
+      );
 
       wrapper.instance().workflow = { close };
       wrapper.instance().onChosen({
@@ -425,15 +493,15 @@ describe('ModalWorkflowSource', () => {
 
   it('#onClose', () => {
     const onClose = jest.fn();
-    const wrapper = shallow((
-      <ModalWorkflowSource
+    const wrapper = shallow(
+      <LinkModalWorkflowSource
         editorState={EditorState.createEmpty()}
         entityType={{}}
-        entity={{}}
+        entity={null}
         onComplete={() => {}}
         onClose={onClose}
-      />
-    ));
+      />,
+    );
 
     wrapper.instance().onClose({
       preventDefault: () => {},

@@ -1,26 +1,17 @@
-{% extends "wagtailadmin/base.html" %}
+{% extends "wagtailadmin/generic/base.html" %}
 {% load i18n wagtailadmin_tags %}
 
 {% block titletag %}{{ view.page_title }}{% endblock %}
 
-{% block extra_css %}
-    {% include "wagtailadmin/pages/_editor_css.html" %}
-    {{ edit_handler.form.media.css }}
-
-    {{ view.media.css }}
-{% endblock %}
-
 {% block extra_js %}
+    {{ block.super }}
     {% include "wagtailadmin/pages/_editor_js.html" %}
-    {{ edit_handler.form.media.js }}
-    {{ edit_handler.html_declarations }}
-
-    {{ view.media.js }}
 {% endblock %}
 
 {% block content %}
-
-    {% include "wagtailadmin/shared/header.html" with title=view.page_title icon=view.header_icon merged=1 %}
+    {% block header %}
+        {{ block.super }}
+    {% endblock %}
 
     <form action="{{ view.get_add_url }}" enctype="multipart/form-data" method="POST" novalidate>
         {% csrf_token %}
@@ -28,7 +19,7 @@
         <ul class="fields nice-padding">
             {% for field in form %}
                 {% if not field.is_hidden %}
-                    {% include "wagtailadmin/shared/field_as_li.html" %}
+                    <li>{% formattedfield field %}</li>
                 {% else %}
                     {{ field }}
                 {% endif %}
@@ -36,18 +27,21 @@
         </ul>
 
         {% block footer %}
-            <footer role="contentinfo">
-                <ul>
-                    <li class="actions">
-                        {% block form_actions %}
-                            <div class="dropdown dropup dropdown-button match-width">
-                                <button type="submit" class="button action-save button-longrunning" data-clicked-text="{% trans 'Creating…' %}">
-                                    {% icon name="spinner" %}<em>{% trans 'Create' %}</em>
-                                </button>
-                            </div>
-                        {% endblock %}
-                    </li>
-                </ul>
+            <footer class="footer">
+                <div class="actions footer__container w-flex">
+                    {% block form_actions %}
+                        <button
+                            type="submit"
+                            class="button action-save button-longrunning w-flex-grow"
+                            data-controller="w-progress"
+                            data-action="w-progress#activate"
+                            data-w-progress-active-value="{% trans 'Creating…' %}"
+                        >
+                            {% icon name="spinner" %}
+                            <em data-w-progress-target="label">{% trans 'Create' %}</em>
+                        </button>
+                    {% endblock %}
+                </div>
             </footer>
         {% endblock %}
     </form>

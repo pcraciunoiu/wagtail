@@ -1,15 +1,14 @@
 from django.core.exceptions import ObjectDoesNotExist
 from django.utils.html import escape
 
-from wagtail.core.rich_text import LinkHandler
 from wagtail.documents import get_document_model
-
+from wagtail.rich_text import LinkHandler
 
 # Front-end conversion
 
 
 class DocumentLinkHandler(LinkHandler):
-    identifier = 'document'
+    identifier = "document"
 
     @staticmethod
     def get_model():
@@ -22,3 +21,8 @@ class DocumentLinkHandler(LinkHandler):
             return '<a href="%s">' % escape(doc.url)
         except (ObjectDoesNotExist, KeyError):
             return "<a>"
+
+    @classmethod
+    def extract_references(cls, attrs):
+        # Yields tuples of (content_type_id, object_id, model_path, content_path)
+        yield cls.get_model(), attrs["id"], "", ""

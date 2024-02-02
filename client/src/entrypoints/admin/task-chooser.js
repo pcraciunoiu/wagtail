@@ -2,12 +2,12 @@ import $ from 'jquery';
 
 function createTaskChooser(id) {
   const chooserElement = $('#' + id + '-chooser');
-  const taskName = chooserElement.find('.name');
+  const taskName = chooserElement.find('[data-chooser-title]');
   const input = $('#' + id);
-  const editAction = chooserElement.find('.action-edit');
+  const editAction = chooserElement.find('[data-chooser-edit-link]');
 
-  $('.action-choose', chooserElement).on('click', () => {
-    // eslint-disable-next-line no-undef, new-cap
+  $('[data-chooser-action-choose]', chooserElement).on('click', () => {
+    // eslint-disable-next-line no-undef
     ModalWorkflow({
       url: chooserElement.data('chooserUrl'),
       // eslint-disable-next-line no-undef
@@ -18,8 +18,8 @@ function createTaskChooser(id) {
           taskName.text(data.name);
           chooserElement.removeClass('blank');
           editAction.attr('href', data.edit_url);
-        }
-      }
+        },
+      },
     });
   });
 }

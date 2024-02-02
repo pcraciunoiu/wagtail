@@ -3,25 +3,28 @@
 # This file is distributed under the same license as the PACKAGE package.
 #
 # Translators:
-# Luís Favas <al62006@utad.eu>, 2020
-# Tiago Henriques <trinosauro@gmail.com>, 2016
+# Luís Tiago Favas <traducoes@favas.eu>, 2020
+# Luís Tiago Favas <traducoes@favas.eu>, 2021
+# Luís Tiago Favas <traducoes@favas.eu>, 2020-2021
+# Tiago Henriques <trinosauro@gmail.com>, 2016,2022
 msgid ""
 msgstr ""
 "Project-Id-Version: Wagtail\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2021-01-18 17:30+0000\n"
-"PO-Revision-Date: 2020-07-07 23:05+0000\n"
-"Last-Translator: Luís Favas <al62006@utad.eu>\n"
-"Language-Team: Portuguese (Portugal) (http://www.transifex.com/torchbox/"
+"POT-Creation-Date: 2023-10-19 23:14+0100\n"
+"PO-Revision-Date: 2016-05-11 20:23+0000\n"
+"Last-Translator: Tiago Henriques <trinosauro@gmail.com>, 2016,2022\n"
+"Language-Team: Portuguese (Portugal) (http://app.transifex.com/torchbox/"
 "wagtail/language/pt_PT/)\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Language: pt_PT\n"
-"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+"Plural-Forms: nplurals=3; plural=(n == 0 || n == 1) ? 0 : n != 0 && n % "
+"1000000 == 0 ? 1 : 2;\n"
 
 msgid "Wagtail table block"
-msgstr "Bloco de tabela do Wagtail"
+msgstr "Bloco de tabela Wagtail"
 
 msgid "Row header"
 msgstr "Cabeçalho de linha"
@@ -44,3 +47,6 @@ msgid ""
 msgstr ""
 "Um cabeçalho que identifica o tema geral da tabela, e que é útil para "
 "utilizadores de leitores de ecrã"
+
+msgid "Table"
+msgstr "Tabela"

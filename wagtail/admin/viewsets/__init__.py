@@ -1,6 +1,7 @@
-from django.urls import include, re_path
+from django.urls import include, path
 
-from wagtail.core import hooks
+from wagtail import hooks
+from wagtail.admin.viewsets.base import ViewSetGroup
 
 
 class ViewSetRegistry:
@@ -8,13 +9,26 @@ class ViewSetRegistry:
         self.viewsets = []
 
     def populate(self):
-        for fn in hooks.get_hooks('register_admin_viewset'):
+        for fn in hooks.get_hooks("register_admin_viewset"):
             viewset = fn()
-            self.register(viewset)
+            if isinstance(viewset, (list, tuple)):
+                for vs in viewset:
+                    self.register(vs)
+            else:
+                self.register(viewset)
 
-    def register(self, viewset_cls):
-        self.viewsets.append(viewset_cls)
-        return viewset_cls
+    def register(self, viewset):
+        # Allow registering a ViewSetGroup, which will register all of its
+        # registerables.
+        if isinstance(viewset, ViewSetGroup):
+            for vs in viewset.registerables:
+                self.register(vs)
+            viewset.on_register()
+            return
+
+        self.viewsets.append(viewset)
+        viewset.on_register()
+        return viewset
 
     def get_urlpatterns(self):
         urlpatterns = []
@@ -23,10 +37,15 @@ class ViewSetRegistry:
             vs_urlpatterns = viewset.get_urlpatterns()
 
             if vs_urlpatterns:
-                urlpatterns.append(re_path(
-                    r'^{}/'.format(viewset.url_prefix),
-                    include((vs_urlpatterns, viewset.name), namespace=viewset.name)
-                ))
+                urlpatterns.append(
+                    path(
+                        f"{viewset.url_prefix}/",
+                        include(
+                            (vs_urlpatterns, viewset.url_namespace),
+                            namespace=viewset.url_namespace,
+                        ),
+                    )
+                )
 
         return urlpatterns
 

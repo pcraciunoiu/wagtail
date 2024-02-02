@@ -1,6 +1,5 @@
 import os
 import tempfile
-
 from io import StringIO
 from unittest.mock import patch
 
@@ -9,8 +8,7 @@ from django.core.management.base import CommandError
 from django.test import TestCase
 
 from wagtail.contrib.redirects.models import Redirect
-from wagtail.core.models import Site
-
+from wagtail.models import Site
 
 TEST_ROOT = os.path.abspath(os.path.dirname(__file__))
 
@@ -27,18 +25,16 @@ class TestImportCommand(TestCase):
             call_command("import_redirects", src="random", stdout=out)
 
     def test_invalid_extension_raises_error(self):
-        f = "{}/files/example.numbers".format(TEST_ROOT)
+        f = f"{TEST_ROOT}/files/example.yaml"
 
-        with self.assertRaisesMessage(Exception, "Invalid format 'numbers'"):
+        with self.assertRaisesMessage(Exception, "Invalid format 'yaml'"):
             out = StringIO()
             call_command("import_redirects", src=f, stdout=out)
 
     def test_empty_file_raises_error(self):
         empty_file = tempfile.NamedTemporaryFile()
 
-        with self.assertRaisesMessage(
-            Exception, "File '{}' is empty".format(empty_file.name)
-        ):
+        with self.assertRaisesMessage(Exception, f"File '{empty_file.name}' is empty"):
             out = StringIO()
             call_command("import_redirects", src=empty_file.name, stdout=out)
 
@@ -55,14 +51,14 @@ class TestImportCommand(TestCase):
         self.assertEqual(Redirect.objects.count(), 0)
 
     def test_format_gets_picked_up_from_file_extension(self):
-        f = "{}/files/example.csv".format(TEST_ROOT)
+        f = f"{TEST_ROOT}/files/example.csv"
 
         out = StringIO()
         call_command("import_redirects", src=f, stdout=out)
         self.assertEqual(Redirect.objects.count(), 2)
 
     def test_binary_formats_are_supported(self):
-        f = "{}/files/example.xls".format(TEST_ROOT)
+        f = f"{TEST_ROOT}/files/example.xlsx"
 
         out = StringIO()
         call_command("import_redirects", src=f, stdout=out)
@@ -83,7 +79,7 @@ class TestImportCommand(TestCase):
         redirect = Redirect.objects.first()
         self.assertEqual(redirect.old_path, "/alpha")
         self.assertEqual(redirect.redirect_link, "http://omega.test/")
-        self.assertEqual(redirect.is_permanent, True)
+        self.assertIs(redirect.is_permanent, True)
 
     def test_trailing_slash_gets_stripped(self):
         invalid_file = tempfile.NamedTemporaryFile(mode="w+", encoding="utf-8")
@@ -148,7 +144,7 @@ class TestImportCommand(TestCase):
         redirect = Redirect.objects.first()
         self.assertEqual(redirect.old_path, "/alpha")
         self.assertEqual(redirect.redirect_link, "http://omega.test/")
-        self.assertEqual(redirect.is_permanent, False)
+        self.assertIs(redirect.is_permanent, False)
 
     def test_duplicate_from_links_get_skipped(self):
         invalid_file = tempfile.NamedTemporaryFile(mode="w+", encoding="utf-8")
@@ -211,7 +207,7 @@ class TestImportCommand(TestCase):
         out = StringIO()
         call_command(
             "import_redirects",
-            "--src={}".format(invalid_file.name),
+            f"--src={invalid_file.name}",
             "--from=1",
             "--to=3",
             "--format=csv",
@@ -222,7 +218,7 @@ class TestImportCommand(TestCase):
         redirect = Redirect.objects.first()
         self.assertEqual(redirect.old_path, "/alpha")
         self.assertEqual(redirect.redirect_link, "http://omega.test/")
-        self.assertEqual(redirect.is_permanent, True)
+        self.assertIs(redirect.is_permanent, True)
 
     def test_nothing_gets_saved_on_dry_run(self):
         invalid_file = tempfile.NamedTemporaryFile(mode="w+", encoding="utf-8")
@@ -306,7 +302,7 @@ class TestImportCommand(TestCase):
         self.assertEqual(len(redirects), 2)
         self.assertEqual(redirects[0].old_path, "/three")
         self.assertEqual(redirects[0].redirect_link, "http://three.test/")
-        self.assertEqual(redirects[0].is_permanent, True)
+        self.assertIs(redirects[0].is_permanent, True)
         self.assertEqual(redirects[1].old_path, "/four")
         self.assertEqual(redirects[1].redirect_link, "http://four.test/")
 
@@ -333,4 +329,4 @@ class TestImportCommand(TestCase):
         self.assertEqual(len(redirects), 1)
         self.assertEqual(redirects[0].old_path, "/one")
         self.assertEqual(redirects[0].redirect_link, "http://one.test/")
-        self.assertEqual(redirects[0].is_permanent, True)
+        self.assertIs(redirects[0].is_permanent, True)

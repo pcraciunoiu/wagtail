@@ -9,10 +9,10 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Wagtail\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2021-01-18 17:31+0000\n"
-"PO-Revision-Date: 2019-05-11 02:53+0000\n"
-"Last-Translator: Onorio de Jesus Afonso <onorio@catalpa.io>\n"
-"Language-Team: Tetum (Tetun) (http://www.transifex.com/torchbox/wagtail/"
+"POT-Creation-Date: 2023-10-19 23:14+0100\n"
+"PO-Revision-Date: 2014-10-03 15:24+0000\n"
+"Last-Translator: Onorio de Jesus Afonso <onorio@catalpa.io>, 2019\n"
+"Language-Team: Tetum (Tetun) (http://app.transifex.com/torchbox/wagtail/"
 "language/tet/)\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -26,20 +26,14 @@ msgstr "Site wagtail sira"
 msgid "Choose a root page"
 msgstr "Hili pajina abut ida"
 
-msgid "Choose a different root page"
-msgstr "Hili diferente pajina abut ida"
+msgid "Sites"
+msgstr "Site sira"
+
+msgid "Add a site"
+msgstr "Aumenta site ida"
 
 msgid "Site"
 msgstr "Site"
-
-msgid "Port"
-msgstr "Odamatan"
-
-msgid "Site name"
-msgstr "Naran site"
-
-msgid "Root page"
-msgstr "Pajina abut"
 
 msgid "Default?"
 msgstr "Estandar?"
@@ -47,20 +41,16 @@ msgstr "Estandar?"
 msgid "Default"
 msgstr "Estandar"
 
-msgid "Sites"
-msgstr "Site sira"
-
-msgid "Add a site"
-msgstr "Aumenta site ida"
-
 msgid "Add site"
 msgstr "Aumenta site"
 
-msgid "Site '{0}' created."
-msgstr "Site '{0}' kria ona"
+#, python-format
+msgid "Site '%(object)s' created."
+msgstr "Site '%(object)s' kria ona"
 
-msgid "Site '{0}' updated."
-msgstr "Situs '{0}' atualiza ona"
+#, python-format
+msgid "Site '%(object)s' updated."
+msgstr "Situs '%(object)s' atualiza ona"
 
 msgid "The site could not be saved due to errors."
 msgstr "Site nee la bele rai tamba iha erru sira."
@@ -68,8 +58,9 @@ msgstr "Site nee la bele rai tamba iha erru sira."
 msgid "Delete site"
 msgstr "Hamoos situs"
 
-msgid "Site '{0}' deleted."
-msgstr "Site '{0}' hamoos ona"
+#, python-format
+msgid "Site '%(object)s' deleted."
+msgstr "Site '%(object)s' hamoos ona"
 
 msgid "Are you sure you want to delete this site?"
 msgstr "Ita asseita katak ita hakarak hamoos duni site nee?"

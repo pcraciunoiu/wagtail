@@ -1,8 +1,8 @@
 import React from 'react';
 import { shallow, mount } from 'enzyme';
 
-import MediaBlock from '../blocks/MediaBlock';
 import { EditorState } from 'draft-js';
+import MediaBlock from './MediaBlock';
 
 describe('MediaBlock', () => {
   it('renders', () => {
@@ -11,6 +11,7 @@ describe('MediaBlock', () => {
         <MediaBlock
           src="example.png"
           alt=""
+          fallbackText="Fallback text"
           block={{}}
           blockProps={{
             editorState: {},
@@ -26,17 +27,18 @@ describe('MediaBlock', () => {
           }}
         >
           Test
-        </MediaBlock>
-      )
+        </MediaBlock>,
+      ),
     ).toMatchSnapshot();
   });
 
-  it('no data', () => {
+  it('no data, with fallback', () => {
     expect(
       shallow(
         <MediaBlock
           src=""
           alt=""
+          fallbackText="Fallback text"
           block={{}}
           blockProps={{
             editorState: {},
@@ -50,8 +52,33 @@ describe('MediaBlock', () => {
           }}
         >
           Test
-        </MediaBlock>
-      )
+        </MediaBlock>,
+      ),
+    ).toMatchSnapshot();
+  });
+
+  it('no data, no fallback', () => {
+    expect(
+      shallow(
+        <MediaBlock
+          src=""
+          alt=""
+          fallbackText={null}
+          block={{}}
+          blockProps={{
+            editorState: {},
+            entityType: {
+              icon: '#icon-test',
+            },
+            entity: {
+              getData: () => ({}),
+            },
+            onChange: () => {},
+          }}
+        >
+          Test
+        </MediaBlock>,
+      ),
     ).toMatchSnapshot();
   });
 
@@ -81,6 +108,7 @@ describe('MediaBlock', () => {
         <MediaBlock
           src="example.png"
           alt=""
+          fallbackText="Fallback text"
           block={{
             getKey: () => 'abcde',
             getLength: () => 1,
@@ -88,7 +116,7 @@ describe('MediaBlock', () => {
           blockProps={blockProps}
         >
           <div id="test">Test</div>
-        </MediaBlock>
+        </MediaBlock>,
       );
     });
 
@@ -113,8 +141,7 @@ describe('MediaBlock', () => {
       wrapper.simulate('click', { target });
 
       expect(
-        wrapper
-          .find('Portal > Portal').prop('containerInfo')
+        wrapper.find('Portal > Portal').prop('containerInfo'),
       ).toMatchSnapshot();
     });
 
@@ -138,11 +165,9 @@ describe('MediaBlock', () => {
 
       wrapper.simulate('click', { target });
 
-      expect(
-        wrapper
-          .find('.Tooltip')
-          .prop('className')
-      ).toBe('Tooltip Tooltip--left');
+      expect(wrapper.find('.Tooltip').prop('className')).toBe(
+        'Tooltip Tooltip--left',
+      );
     });
 
     it('tooltip closes', () => {

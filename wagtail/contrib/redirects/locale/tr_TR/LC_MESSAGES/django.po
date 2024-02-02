@@ -6,15 +6,16 @@
 # José Luis <alagunajs@gmail.com>, 2015
 # José Luis <alagunajs@gmail.com>, 2015
 # Py Data Geek <pydatageek@gmail.com>, 2019
+# Py Data Geek <pydatageek@gmail.com>, 2019
 # José Luis <alagunajs@gmail.com>, 2016-2017
 msgid ""
 msgstr ""
 "Project-Id-Version: Wagtail\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2021-01-18 17:30+0000\n"
-"PO-Revision-Date: 2020-07-24 16:51+0000\n"
-"Last-Translator: Matt Westcott <matthew@torchbox.com>\n"
-"Language-Team: Turkish (Turkey) (http://www.transifex.com/torchbox/wagtail/"
+"POT-Creation-Date: 2023-10-19 23:14+0100\n"
+"PO-Revision-Date: 2014-02-20 21:04+0000\n"
+"Last-Translator: Py Data Geek <pydatageek@gmail.com>, 2019\n"
+"Language-Team: Turkish (Turkey) (http://app.transifex.com/torchbox/wagtail/"
 "language/tr_TR/)\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -25,6 +26,12 @@ msgstr ""
 msgid "Wagtail redirects"
 msgstr "Wagtail yönlendirmeler (redirects)"
 
+msgid "Type"
+msgstr "Tür"
+
+msgid "All"
+msgstr "Hepsi"
+
 msgid "From site"
 msgstr "Siteden"
 
@@ -33,6 +40,10 @@ msgstr "Tüm siteler"
 
 msgid "A redirect with this path already exists."
 msgstr "Bunu yolu kullanan bir yönlendirme zaten var."
+
+#, python-format
+msgid "Supported formats: %(supported_formats)s."
+msgstr "Desteklenen biçimler: %(supported_formats)s."
 
 msgid "redirect from"
 msgstr "yönlendiren"
@@ -55,6 +66,9 @@ msgstr "bir sayfaya yönlendir"
 
 msgid "redirect to any URL"
 msgstr "herhangi bir URL'ye yönlendir"
+
+msgid "created at"
+msgstr "oluşturulma zamanı"
 
 msgid "temporary"
 msgstr "geçici"
@@ -84,6 +98,9 @@ msgstr "Bu yönlendirmeyi silmek istediğinizden emin misiniz?"
 msgid "Yes, delete"
 msgstr "Evet, sil"
 
+msgid "Preview"
+msgstr "Önizleme"
+
 #, python-format
 msgid "Editing %(title)s"
 msgstr "%(title)s düzenleniyor"
@@ -100,32 +117,14 @@ msgstr "Yönlendiren"
 msgid "To"
 msgstr "Yönlendirilen"
 
+msgid "Continue"
+msgstr "Devam et"
+
 msgid "Site"
 msgstr "Site"
 
-msgid "Type"
-msgstr "Tür"
-
 msgid "Edit this redirect"
 msgstr "Yönlendirmeyi düzenle"
-
-#, python-format
-msgid ""
-"\n"
-"            There is %(counter)s match\n"
-"        "
-msgid_plural ""
-"\n"
-"            There are %(counter)s matches\n"
-"        "
-msgstr[0] ""
-"\n"
-"            %(counter)s eşleşme var\n"
-"        "
-msgstr[1] ""
-"\n"
-"            %(counter)s eşleşme var\n"
-"        "
 
 #, python-format
 msgid "Sorry, no redirects match \"<em>%(query_string)s</em>\""
@@ -133,17 +132,18 @@ msgstr "Üzgünüm, \"<em>%(query_string)s</em>\" ile eşleşen yönlendirme yok
 
 #, python-format
 msgid ""
-"No redirects have been created. Why not <a href="
-"\"%(wagtailredirects_add_redirect_url)s\">add one</a>?"
+"No redirects have been created. Why not <a "
+"href=\"%(wagtailredirects_add_redirect_url)s\">add one</a>?"
 msgstr ""
-"Hiç yönedirme oluşturulmadı. Neden <a href="
-"\"%(wagtailredirects_add_redirect_url)s\">bir tane eklemiyorsunuz</a>?"
+"Hiç yönedirme oluşturulmadı. Neden <a "
+"href=\"%(wagtailredirects_add_redirect_url)s\">bir tane eklemiyorsunuz</a>?"
 
 msgid "Search redirects"
 msgstr "Arama yönlendirmeleri"
 
-msgid "Redirect '{0}' updated."
-msgstr "'{0}' yönlendirmesi güncellendi."
+#, python-format
+msgid "Redirect '%(redirect_title)s' updated."
+msgstr "'%(redirect_title)s' yönlendirmesi güncellendi."
 
 msgid "Edit"
 msgstr "Düzenle"
@@ -151,11 +151,13 @@ msgstr "Düzenle"
 msgid "The redirect could not be saved due to errors."
 msgstr "Hata nedeniyle yönlendirme kaydedilemedi."
 
-msgid "Redirect '{0}' deleted."
-msgstr "'{0}' yönlendirmesi silindi."
+#, python-format
+msgid "Redirect '%(redirect_title)s' deleted."
+msgstr "'%(redirect_title)s' yönlendirmesi silindi."
 
-msgid "Redirect '{0}' added."
-msgstr "'{0}' yönlendirmesi eklendi."
+#, python-format
+msgid "Redirect '%(redirect_title)s' added."
+msgstr "'%(redirect_title)s' yönlendirmesi eklendi."
 
 msgid "The redirect could not be created due to errors."
 msgstr "Hata nedeniyle yönlendirme oluşturulamadı."

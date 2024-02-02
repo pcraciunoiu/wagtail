@@ -1,3 +1,4 @@
+import datetime
 from warnings import warn
 
 from django.db.models.functions.datetime import Extract as ExtractDate
@@ -17,7 +18,7 @@ class FilterError(Exception):
 class FieldError(Exception):
     def __init__(self, *args, field_name=None, **kwargs):
         self.field_name = field_name
-        super(FieldError, self).__init__(*args, **kwargs)
+        super().__init__(*args, **kwargs)
 
 
 class SearchFieldError(FieldError):
@@ -33,28 +34,35 @@ class OrderByFieldError(FieldError):
 
 
 class BaseSearchQueryCompiler:
-    DEFAULT_OPERATOR = 'or'
+    DEFAULT_OPERATOR = "or"
 
-    def __init__(self, queryset, query, fields=None, operator=None, order_by_relevance=True, partial_match=True):
+    def __init__(
+        self,
+        queryset,
+        query,
+        fields=None,
+        operator=None,
+        order_by_relevance=True,
+    ):
         self.queryset = queryset
         if query is None:
-            warn('Querying `None` is deprecated, use `MATCH_ALL` instead.',
-                 DeprecationWarning)
+            warn(
+                "Querying `None` is deprecated, use `MATCH_ALL` instead.",
+                DeprecationWarning,
+            )
             query = MATCH_ALL
         elif isinstance(query, str):
-            query = PlainText(query,
-                              operator=operator or self.DEFAULT_OPERATOR)
+            query = PlainText(query, operator=operator or self.DEFAULT_OPERATOR)
         self.query = query
         self.fields = fields
         self.order_by_relevance = order_by_relevance
-        self.partial_match = partial_match
 
     def _get_filterable_field(self, field_attname):
         # Get field
-        field = dict(
-            (field.get_attname(self.queryset.model), field)
+        field = {
+            field.get_attname(self.queryset.model): field
             for field in self.queryset.model.get_filterable_search_fields()
-        ).get(field_attname, None)
+        }.get(field_attname, None)
 
         return field
 
@@ -70,9 +78,14 @@ class BaseSearchQueryCompiler:
 
         if field is None:
             raise FilterFieldError(
-                'Cannot filter search results with field "' + field_attname + '". Please add index.FilterField(\''
-                + field_attname + '\') to ' + self.queryset.model.__name__ + '.search_fields.',
-                field_name=field_attname
+                'Cannot filter search results with field "'
+                + field_attname
+                + "\". Please add index.FilterField('"
+                + field_attname
+                + "') to "
+                + self.queryset.model.__name__
+                + ".search_fields.",
+                field_name=field_attname,
             )
 
         # Process the lookup
@@ -81,8 +94,15 @@ class BaseSearchQueryCompiler:
 
         if result is None:
             raise FilterError(
-                'Could not apply filter on search results: "' + field_attname + '__'
-                + lookup + ' = ' + str(value) + '". Lookup "' + lookup + '"" not recognised.'
+                'Could not apply filter on search results: "'
+                + field_attname
+                + "__"
+                + lookup
+                + " = "
+                + str(value)
+                + '". Lookup "'
+                + lookup
+                + '"" not recognised.'
             )
 
         return result
@@ -91,39 +111,100 @@ class BaseSearchQueryCompiler:
         # Check if this is a leaf node
         if isinstance(where_node, Lookup):
             if isinstance(where_node.lhs, ExtractDate):
-                if isinstance(where_node.lhs, ExtractYear):
-                    field_attname = where_node.lhs.lhs.target.attname
-                else:
+                if not isinstance(where_node.lhs, ExtractYear):
                     raise FilterError(
-                        'Cannot apply filter on search results: "' + where_node.lhs.lookup_name
+                        'Cannot apply filter on search results: "'
+                        + where_node.lhs.lookup_name
                         + '" queries are not supported.'
                     )
+                else:
+                    field_attname = where_node.lhs.lhs.target.attname
+                    lookup = where_node.lookup_name
+                    if lookup == "gte":
+                        # filter on year(date) >= value
+                        # i.e. date >= Jan 1st of that year
+                        value = datetime.date(int(where_node.rhs), 1, 1)
+                    elif lookup == "gt":
+                        # filter on year(date) > value
+                        # i.e. date >= Jan 1st of the next year
+                        value = datetime.date(int(where_node.rhs) + 1, 1, 1)
+                        lookup = "gte"
+                    elif lookup == "lte":
+                        # filter on year(date) <= value
+                        # i.e. date < Jan 1st of the next year
+                        value = datetime.date(int(where_node.rhs) + 1, 1, 1)
+                        lookup = "lt"
+                    elif lookup == "lt":
+                        # filter on year(date) < value
+                        # i.e. date < Jan 1st of that year
+                        value = datetime.date(int(where_node.rhs), 1, 1)
+                    elif lookup == "exact":
+                        # filter on year(date) == value
+                        # i.e. date >= Jan 1st of that year and date < Jan 1st of the next year
+                        filter1 = self._process_filter(
+                            field_attname,
+                            "gte",
+                            datetime.date(int(where_node.rhs), 1, 1),
+                            check_only=check_only,
+                        )
+                        filter2 = self._process_filter(
+                            field_attname,
+                            "lt",
+                            datetime.date(int(where_node.rhs) + 1, 1, 1),
+                            check_only=check_only,
+                        )
+                        if check_only:
+                            return
+                        else:
+                            return self._connect_filters(
+                                [filter1, filter2], "AND", False
+                            )
+                    else:
+                        raise FilterError(
+                            'Cannot apply filter on search results: "'
+                            + where_node.lhs.lookup_name
+                            + '" queries are not supported.'
+                        )
             else:
                 field_attname = where_node.lhs.target.attname
-            lookup = where_node.lookup_name
-            value = where_node.rhs
+                lookup = where_node.lookup_name
+                value = where_node.rhs
 
             # Ignore pointer fields that show up in specific page type queries
-            if field_attname.endswith('_ptr_id'):
+            if field_attname.endswith("_ptr_id"):
                 return
 
             # Process the filter
-            return self._process_filter(field_attname, lookup, value, check_only=check_only)
+            return self._process_filter(
+                field_attname, lookup, value, check_only=check_only
+            )
 
         elif isinstance(where_node, SubqueryConstraint):
-            raise FilterError('Could not apply filter on search results: Subqueries are not allowed.')
+            raise FilterError(
+                "Could not apply filter on search results: Subqueries are not allowed."
+            )
 
         elif isinstance(where_node, WhereNode):
             # Get child filters
             connector = where_node.connector
-            child_filters = [self._get_filters_from_where_node(child) for child in where_node.children]
+            child_filters = [
+                self._get_filters_from_where_node(child)
+                for child in where_node.children
+            ]
 
             if not check_only:
-                child_filters = [child_filter for child_filter in child_filters if child_filter]
-                return self._connect_filters(child_filters, connector, where_node.negated)
+                child_filters = [
+                    child_filter for child_filter in child_filters if child_filter
+                ]
+                return self._connect_filters(
+                    child_filters, connector, where_node.negated
+                )
 
         else:
-            raise FilterError('Could not apply filter on search results: Unknown where node: ' + str(type(where_node)))
+            raise FilterError(
+                "Could not apply filter on search results: Unknown where node: "
+                + str(type(where_node))
+            )
 
     def _get_filters_from_queryset(self):
         return self._get_filters_from_where_node(self.queryset.query.where)
@@ -135,7 +216,7 @@ class BaseSearchQueryCompiler:
         for field_name in self.queryset.query.order_by:
             reverse = False
 
-            if field_name.startswith('-'):
+            if field_name.startswith("-"):
                 reverse = True
                 field_name = field_name[1:]
 
@@ -143,9 +224,14 @@ class BaseSearchQueryCompiler:
 
             if field is None:
                 raise OrderByFieldError(
-                    'Cannot sort search results with field "' + field_name + '". Please add index.FilterField(\''
-                    + field_name + '\') to ' + self.queryset.model.__name__ + '.search_fields.',
-                    field_name=field_name
+                    'Cannot sort search results with field "'
+                    + field_name
+                    + "\". Please add index.FilterField('"
+                    + field_name
+                    + "') to "
+                    + self.queryset.model.__name__
+                    + ".search_fields.",
+                    field_name=field_name,
                 )
 
             yield reverse, field
@@ -153,14 +239,22 @@ class BaseSearchQueryCompiler:
     def check(self):
         # Check search fields
         if self.fields:
-            allowed_fields = {field.field_name for field in self.queryset.model.get_searchable_search_fields()}
+            allowed_fields = {
+                field.field_name
+                for field in self.queryset.model.get_searchable_search_fields()
+            }
 
             for field_name in self.fields:
                 if field_name not in allowed_fields:
                     raise SearchFieldError(
-                        'Cannot search with field "' + field_name + '". Please add index.SearchField(\''
-                        + field_name + '\') to ' + self.queryset.model.__name__ + '.search_fields.',
-                        field_name=field_name
+                        'Cannot search with field "'
+                        + field_name
+                        + "\". Please add index.SearchField('"
+                        + field_name
+                        + "') to "
+                        + self.queryset.model.__name__
+                        + ".search_fields.",
+                        field_name=field_name,
                     )
 
         # Check where clause
@@ -200,8 +294,9 @@ class BaseSearchResults:
 
     def _clone(self):
         klass = self.__class__
-        new = klass(self.backend, self.query_compiler,
-                    prefetch_related=self.prefetch_related)
+        new = klass(
+            self.backend, self.query_compiler, prefetch_related=self.prefetch_related
+        )
         new.start = self.start
         new.stop = self.stop
         new._score_field = self._score_field
@@ -258,7 +353,7 @@ class BaseSearchResults:
         data = list(self[:21])
         if len(data) > 20:
             data[-1] = "...(remaining elements truncated)..."
-        return '<SearchResults %r>' % data
+        return "<SearchResults %r>" % data
 
     def annotate_score(self, field_name):
         clone = self._clone()
@@ -289,6 +384,7 @@ class NullIndex:
     BaseSearchBackend. Use this for search backends that do not maintain an index, such as the
     database backend.
     """
+
     def add_model(self, model):
         pass
 
@@ -357,21 +453,26 @@ class BaseSearchBackend:
         if not class_is_indexed(model):
             return EmptySearchResults()
 
-        # Check that theres still a query string after the clean up
+        # Check that there's still a query string after the clean up
         if query == "":
             return EmptySearchResults()
 
         # Search
-        search_query = query_compiler_class(
-            queryset, query, **kwargs
-        )
+        search_query_compiler = query_compiler_class(queryset, query, **kwargs)
 
         # Check the query
-        search_query.check()
+        search_query_compiler.check()
 
-        return self.results_class(self, search_query)
+        return self.results_class(self, search_query_compiler)
 
-    def search(self, query, model_or_queryset, fields=None, operator=None, order_by_relevance=True, partial_match=True):
+    def search(
+        self,
+        query,
+        model_or_queryset,
+        fields=None,
+        operator=None,
+        order_by_relevance=True,
+    ):
         return self._search(
             self.query_compiler_class,
             query,
@@ -379,12 +480,20 @@ class BaseSearchBackend:
             fields=fields,
             operator=operator,
             order_by_relevance=order_by_relevance,
-            partial_match=partial_match,
         )
 
-    def autocomplete(self, query, model_or_queryset, fields=None, operator=None, order_by_relevance=True):
+    def autocomplete(
+        self,
+        query,
+        model_or_queryset,
+        fields=None,
+        operator=None,
+        order_by_relevance=True,
+    ):
         if self.autocomplete_query_compiler_class is None:
-            raise NotImplementedError("This search backend does not support the autocomplete API")
+            raise NotImplementedError(
+                "This search backend does not support the autocomplete API"
+            )
 
         return self._search(
             self.autocomplete_query_compiler_class,
@@ -394,3 +503,27 @@ class BaseSearchBackend:
             operator=operator,
             order_by_relevance=order_by_relevance,
         )
+
+
+def get_model_root(model):
+    """
+    This function finds the root model for any given model. The root model is
+    the highest concrete model that it descends from. If the model doesn't
+    descend from another concrete model then the model is it's own root model so
+    it is returned.
+
+    Examples:
+    >>> get_model_root(wagtailcore.Page)
+    wagtailcore.Page
+
+    >>> get_model_root(myapp.HomePage)
+    wagtailcore.Page
+
+    >>> get_model_root(wagtailimages.Image)
+    wagtailimages.Image
+    """
+    if model._meta.parents:
+        parent_model = list(model._meta.parents.items())[0][0]
+        return get_model_root(parent_model)
+
+    return model

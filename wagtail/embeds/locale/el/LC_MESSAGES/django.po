@@ -3,6 +3,8 @@
 # This file is distributed under the same license as the PACKAGE package.
 #
 # Translators:
+# Dimitri Fekas, 2022
+# fekioh, 2022
 # George Giannoulopoulos <vdotoree@yahoo.gr>, 2015
 # serafeim <serafeim@torchbox.com>, 2014,2016
 # serafeim <serafeim@torchbox.com>, 2014,2016
@@ -11,16 +13,19 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Wagtail\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2021-01-18 17:31+0000\n"
-"PO-Revision-Date: 2018-10-28 14:54+0000\n"
-"Last-Translator: Matt Westcott <matthew@torchbox.com>\n"
-"Language-Team: Greek (http://www.transifex.com/torchbox/wagtail/language/"
+"POT-Creation-Date: 2023-10-19 23:14+0100\n"
+"PO-Revision-Date: 2014-02-20 21:05+0000\n"
+"Last-Translator: George Giannoulopoulos <vdotoree@yahoo.gr>, 2015\n"
+"Language-Team: Greek (http://app.transifex.com/torchbox/wagtail/language/"
 "el/)\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Language: el\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
+
+msgid "Wagtail embeds"
+msgstr "Ενσωματώσεις Wagtail"
 
 msgid "Cannot find an embed for this URL."
 msgstr "Δε βρέθηκε τρόπος ενσωμάτωσης για τη διεύθυνση αυτή."
@@ -33,6 +38,9 @@ msgstr "Παρακαλώ εισάγετε μια διεύθυνση"
 
 msgid "embed"
 msgstr "ενσωμάτωση"
+
+msgid "embeds"
+msgstr "ενσωματώσεις"
 
 msgid "Insert embed"
 msgstr "Εισαγωγή ενσωμάτωσης"
@@ -52,3 +60,6 @@ msgid ""
 "Please try again later."
 msgstr ""
 "Φαίνεται να υπάρχει πρόβλημα με το Embedly - παρακαλώ δοκιμάστε αργότερα."
+
+msgid "Embed"
+msgstr "Ενσωμάτωση"

@@ -10,53 +10,78 @@ from django.utils.translation import gettext_lazy as _
 def upload_avatar_to(instance, filename):
     filename, ext = os.path.splitext(filename)
     return os.path.join(
-        'avatar_images',
-        'avatar_{uuid}_{filename}{ext}'.format(
-            uuid=uuid.uuid4(), filename=filename, ext=ext)
+        "avatar_images",
+        "avatar_{uuid}_{filename}{ext}".format(
+            uuid=uuid.uuid4(), filename=filename, ext=ext
+        ),
     )
 
 
 class UserProfile(models.Model):
     user = models.OneToOneField(
-        settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name='wagtail_userprofile'
+        settings.AUTH_USER_MODEL,
+        on_delete=models.CASCADE,
+        related_name="wagtail_userprofile",
     )
 
     submitted_notifications = models.BooleanField(
-        verbose_name=_('submitted notifications'),
+        verbose_name=_("submitted notifications"),
         default=True,
-        help_text=_("Receive notification when a page is submitted for moderation")
+        help_text=_("Receive notification when a page is submitted for moderation"),
     )
 
     approved_notifications = models.BooleanField(
-        verbose_name=_('approved notifications'),
+        verbose_name=_("approved notifications"),
         default=True,
-        help_text=_("Receive notification when your page edit is approved")
+        help_text=_("Receive notification when your page edit is approved"),
     )
 
     rejected_notifications = models.BooleanField(
-        verbose_name=_('rejected notifications'),
+        verbose_name=_("rejected notifications"),
         default=True,
-        help_text=_("Receive notification when your page edit is rejected")
+        help_text=_("Receive notification when your page edit is rejected"),
+    )
+
+    updated_comments_notifications = models.BooleanField(
+        verbose_name=_("updated comments notifications"),
+        default=True,
+        help_text=_(
+            "Receive notification when comments have been created, resolved, or deleted on a page that you have subscribed to receive comment notifications on"
+        ),
     )
 
     preferred_language = models.CharField(
-        verbose_name=_('preferred language'),
+        verbose_name=_("preferred language"),
         max_length=10,
         help_text=_("Select language for the admin"),
-        default=''
+        default="",
     )
 
     current_time_zone = models.CharField(
-        verbose_name=_('current time zone'),
+        verbose_name=_("current time zone"),
         max_length=40,
         help_text=_("Select your current time zone"),
-        default=''
+        default="",
     )
 
     avatar = models.ImageField(
-        verbose_name=_('profile picture'),
+        verbose_name=_("profile picture"),
         upload_to=upload_avatar_to,
         blank=True,
+    )
+
+    dismissibles = models.JSONField(default=dict, blank=True)
+
+    class AdminThemes(models.TextChoices):
+        SYSTEM = "system", _("System default")
+        LIGHT = "light", _("Light")
+        DARK = "dark", _("Dark")
+
+    theme = models.CharField(
+        verbose_name=_("admin theme"),
+        choices=AdminThemes.choices,
+        default=AdminThemes.SYSTEM,
+        max_length=40,
     )
 
     @classmethod
@@ -73,5 +98,5 @@ class UserProfile(models.Model):
         return self.user.get_username()
 
     class Meta:
-        verbose_name = _('user profile')
-        verbose_name_plural = _('user profiles')
+        verbose_name = _("user profile")
+        verbose_name_plural = _("user profiles")
