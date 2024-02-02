@@ -14,6 +14,8 @@ from django.utils.translation import gettext_lazy
 from wagtail.admin.views.generic import CreateView, DeleteView, EditView, IndexView
 from wagtail.compat import AUTH_USER_APP_LABEL, AUTH_USER_MODEL_NAME
 from wagtail.permission_policies import ModelPermissionPolicy
+from wagtail.search.backends import get_search_backend
+from wagtail.search.index import class_is_indexed
 from wagtail.users.forms import UserCreationForm, UserEditForm
 from wagtail.users.utils import user_can_delete_user
 from wagtail.utils.loading import get_custom_form
@@ -119,8 +121,14 @@ class Index(IndexView):
     def get_queryset(self):
         model_fields = set(self.model_fields)
         if self.is_searching:
-            conditions = get_users_filter_query(self.search_query, model_fields)
-            users = User.objects.filter(self.group_filter & conditions)
+            if class_is_indexed(User):
+                search_backend = get_search_backend(self.search_backend_name)
+                users = search_backend.search(
+                    self.search_query, User.objects.filter(self.group_filter)
+                )
+            else:
+                conditions = get_users_filter_query(self.search_query, model_fields)
+                users = User.objects.filter(self.group_filter & conditions)
         else:
             users = User.objects.filter(self.group_filter)
 
