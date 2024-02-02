@@ -143,6 +143,8 @@ class Index(IndexView):
             else:
                 conditions = get_users_filter_query(self.search_query, model_fields)
                 users = User.objects.filter(self.group_filter & conditions)
+        else:
+            users = users.filter(self.group_filter)
 
         return users
 
