@@ -791,6 +791,12 @@
 * Osaf AliSayed
 * mirusu400
 * Maikel Martens
+* Advik Kabra
+* Ankur Raiyani
+* Hossein
+* Andre Delorme
+* arshyia3000
+* Adrien Hamraoui
 
 ## Translators
 
