@@ -69,9 +69,6 @@ class CustomUser(index.Indexed, AbstractBaseUser, PermissionsMixin):
 
     objects = CustomUserManager()
 
-    def get_indexed_instance(self):
-        return self
-
     def get_full_name(self):
         return self.first_name + " " + self.last_name
 
@@ -87,5 +84,4 @@ class CustomUser(index.Indexed, AbstractBaseUser, PermissionsMixin):
         index.SearchField("country", partial_match=True),
         index.SearchField("first_name"),
         index.SearchField("last_name"),
-        index.FilterField("group_id"),
     ]

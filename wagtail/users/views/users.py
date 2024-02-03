@@ -135,11 +135,11 @@ class Index(IndexView):
             users = users.order_by(User.USERNAME_FIELD)
 
         if self.is_searching:
-            if class_is_indexed(User):
+            # Filtering by related fields is not supported in search backend yet
+            # https://docs.wagtail.org/en/stable/topics/search/indexing.html#filtering-on-index-relatedfields
+            if class_is_indexed(User) and not self.group:
                 search_backend = get_search_backend(self.search_backend_name)
-                users = search_backend.search(
-                    self.search_query, User.objects.filter(self.group_filter)
-                )
+                users = search_backend.search(self.search_query, User.objects.filter())
             else:
                 conditions = get_users_filter_query(self.search_query, model_fields)
                 users = User.objects.filter(self.group_filter & conditions)
